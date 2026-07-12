@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>安泊 StaySafe - 酒店安全决策平台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --color-primary: #4A6FA5;
+      --color-primary-light: #6B8CBF;
+      --color-primary-dark: #3A5A8A;
+      --color-accent: #8D7B68;
+      --color-accent-light: #A89580;
+      --color-success: #5B9A6F;
+      --color-danger: #C96868;
+      --color-warning: #D4A574;
+      --color-bg: #F7F9FC;
+      --color-bg-deep: #EEF2F7;
+      --color-surface: #FFFFFF;
+      --color-text: #2C3E50;
+      --color-text-secondary: #5D6D7E;
+      --color-text-muted: #95A5A6;
+      --color-border: #E0E5EA;
+      --font-display: 'Noto Serif SC', Georgia, serif;
+      --font-body: 'Inter', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --shadow-sm: 0 1px 2px rgba(44, 62, 80, 0.04);
+      --shadow-md: 0 4px 16px rgba(44, 62, 80, 0.08);
+      --shadow-lg: 0 12px 40px rgba(44, 62, 80, 0.12);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-body);
+      font-size: 16px;
+      color: var(--color-text);
+      background: var(--color-bg);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ===== Nav ===== */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(247, 249, 252, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(224, 229, 234, 0.6);
+    }
+
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 32px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 18px;
+      color: var(--color-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-logo svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      align-items: center;
+    }
+
+    .nav-link {
+      font-size: 14px;
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      transition: color 0.2s;
+      font-weight: 500;
+    }
+
+    .nav-link:hover {
+      color: var(--color-primary);
+    }
+
+    .nav-cta {
+      padding: 8px 20px;
+      background: var(--color-primary);
+      color: white;
+      border-radius: var(--radius-full);
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .nav-cta:hover {
+      background: var(--color-primary-dark);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+    }
+
+    /* ===== Hero ===== */
+    .hero {
+      padding: 140px 32px 100px;
+      max-width: 1200px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--color-primary);
+      padding: 6px 16px;
+      background: rgba(74, 111, 165, 0.08);
+      border-radius: var(--radius-full);
+      margin-bottom: 32px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+
+    .hero-eyebrow svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(36px, 5vw, 56px);
+      font-weight: 700;
+      line-height: 1.25;
+      color: var(--color-text);
+      margin-bottom: 28px;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero-title .highlight {
+      color: var(--color-primary);
+      position: relative;
+    }
+
+    .hero-title .highlight::after {
+      content: '';
+      position: absolute;
+      bottom: 4px;
+      left: 0;
+      right: 0;
+      height: 8px;
+      background: rgba(74, 111, 165, 0.15);
+      z-index: -1;
+      border-radius: 2px;
+    }
+
+    .hero-subtitle {
+      font-size: 18px;
+      color: var(--color-text-secondary);
+      max-width: 640px;
+      margin: 0 auto 48px;
+      line-height: 1.8;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      padding: 14px 32px;
+      background: var(--color-primary);
+      color: white;
+      border-radius: var(--radius-full);
+      font-size: 16px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .btn-primary:hover {
+      background: var(--color-primary-dark);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .btn-secondary {
+      padding: 14px 32px;
+      background: transparent;
+      color: var(--color-text);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-full);
+      font-size: 16px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      background: rgba(74, 111, 165, 0.04);
+    }
+
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 64px;
+      margin-top: 80px;
+      padding-top: 48px;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-family: var(--font-display);
+      font-size: 40px;
+      font-weight: 700;
+      color: var(--color-primary);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: var(--color-text-muted);
+      margin-top: 8px;
+    }
+
+    @media (max-width: 768px) {
+      .hero {
+        padding: 100px 20px 60px;
+      }
+
+      .hero-stats {
+        gap: 32px;
+        flex-wrap: wrap;
+      }
+
+      .stat-number {
+        font-size: 32px;
+      }
+    }
+
+    /* ===== Section ===== */
+    .section {
+      padding: 100px 32px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-eyebrow {
+      font-size: 13px;
+      color: var(--color-primary);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 700;
+      color: var(--color-text);
+      line-height: 1.3;
+      margin-bottom: 20px;
+    }
+
+    .section-desc {
+      font-size: 17px;
+      color: var(--color-text-secondary);
+      max-width: 640px;
+      line-height: 1.8;
+    }
+
+    @media (max-width: 768px) {
+      .section {
+        padding: 60px 20px;
+      }
+    }
+
+    /* ===== Problem Section ===== */
+    .problem-section {
+      background: var(--color-bg-deep);
+    }
+
+    .problem-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 48px;
+    }
+
+    .problem-card {
+      background: var(--color-surface);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      border: 1px solid var(--color-border);
+      transition: all 0.3s;
+    }
+
+    .problem-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .problem-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      background: rgba(201, 104, 104, 0.1);
+      color: var(--color-danger);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .problem-icon svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .problem-title {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--color-text);
+    }
+
+    .problem-desc {
+      font-size: 15px;
+      color: var(--color-text-secondary);
+      line-height: 1.7;
+    }
+
+    @media (max-width: 900px) {
+      .problem-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ===== Solution Section ===== */
+    .solution-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+      margin-top: 48px;
+    }
+
+    .solution-text h3 {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: var(--color-text);
+    }
+
+    .solution-text p {
+      font-size: 16px;
+      color: var(--color-text-secondary);
+      line-height: 1.8;
+      margin-bottom: 20px;
+    }
+
+    .solution-list {
+      list-style: none;
+    }
+
+    .solution-list li {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--color-border);
+      font-size: 15px;
+      color: var(--color-text-secondary);
+    }
+
+    .solution-list li svg {
+      width: 20px;
+      height: 20px;
+      color: var(--color-success);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .solution-visual {
+      position: relative;
+      aspect-ratio: 4/3;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, rgba(74, 111, 165, 0.08), rgba(141, 123, 104, 0.06));
+      border: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .solution-visual-inner {
+      text-align: center;
+      padding: 32px;
+    }
+
+    .solution-visual-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+      background: var(--color-surface);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-md);
+      color: var(--color-primary);
+    }
+
+    .solution-visual-icon svg {
+      width: 40px;
+      height: 40px;
+    }
+
+    .solution-visual-title {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .solution-visual-desc {
+      font-size: 14px;
+      color: var(--color-text-muted);
+    }
+
+    @media (max-width: 900px) {
+      .solution-content {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+    }
+
+    /* ===== Innovation Section ===== */
+    .innovation-section {
+      background: var(--color-bg-deep);
+    }
+
+    .innovation-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 32px;
+      margin-top: 48px;
+    }
+
+    .innovation-card {
+      background: var(--color-surface);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      border: 1px solid var(--color-border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .innovation-number {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      font-family: var(--font-display);
+      font-size: 64px;
+      font-weight: 700;
+      color: rgba(74, 111, 165, 0.08);
+      line-height: 1;
+    }
+
+    .innovation-tag {
+      display: inline-block;
+      font-size: 12px;
+      color: var(--color-accent);
+      background: rgba(141, 123, 104, 0.1);
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      font-weight: 600;
+      margin-bottom: 16px;
+      letter-spacing: 0.5px;
+    }
+
+    .innovation-title {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--color-text);
+    }
+
+    .innovation-desc {
+      font-size: 15px;
+      color: var(--color-text-secondary);
+      line-height: 1.7;
+    }
+
+    .credibility-demo {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px dashed var(--color-border);
+    }
+
+    .cred-level {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      border-radius: var(--radius-md);
+      background: var(--color-bg);
+    }
+
+    .cred-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .cred-label {
+      font-size: 13px;
+      font-weight: 600;
+      flex-shrink: 0;
+      width: 80px;
+    }
+
+    .cred-desc {
+      font-size: 13px;
+      color: var(--color-text-muted);
+    }
+
+    @media (max-width: 768px) {
+      .innovation-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .innovation-card {
+        padding: 28px;
+      }
+    }
+
+    /* ===== Features Section ===== */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-top: 48px;
+    }
+
+    .feature-card {
+      background: var(--color-surface);
+      border-radius: var(--radius-lg);
+      padding: 28px 20px;
+      border: 1px solid var(--color-border);
+      text-align: center;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--color-primary-light);
+    }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 16px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-primary);
+      background: rgba(74, 111, 165, 0.1);
+    }
+
+    .feature-icon svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .feature-title {
+      font-weight: 600;
+      font-size: 15px;
+      margin-bottom: 6px;
+    }
+
+    .feature-desc {
+      font-size: 13px;
+      color: var(--color-text-muted);
+      line-height: 1.5;
+    }
+
+    @media (max-width: 900px) {
+      .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ===== Journey Section ===== */
+    .journey-section {
+      background: var(--color-bg-deep);
+    }
+
+    .journey-flow {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 48px;
+      position: relative;
+    }
+
+    .journey-card {
+      background: var(--color-surface);
+      border-radius: var(--radius-lg);
+      padding: 36px 28px;
+      border: 1px solid var(--color-border);
+      text-align: center;
+      position: relative;
+    }
+
+    .journey-phase {
+      display: inline-block;
+      font-size: 12px;
+      color: var(--color-primary);
+      background: rgba(74, 111, 165, 0.1);
+      padding: 4px 14px;
+      border-radius: var(--radius-full);
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .journey-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, rgba(74, 111, 165, 0.15), rgba(141, 123, 104, 0.1));
+      color: var(--color-primary);
+    }
+
+    .journey-icon svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .journey-title {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .journey-list {
+      list-style: none;
+      text-align: left;
+    }
+
+    .journey-list li {
+      font-size: 14px;
+      color: var(--color-text-secondary);
+      padding: 6px 0;
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .journey-list li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 14px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--color-primary);
+    }
+
+    .journey-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-primary-light);
+      z-index: 1;
+    }
+
+    .journey-arrow svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    @media (max-width: 900px) {
+      .journey-flow {
+        grid-template-columns: 1fr;
+      }
+
+      .journey-arrow {
+        display: none;
+      }
+    }
+
+    /* ===== CTA Section ===== */
+    .cta-section {
+      text-align: center;
+      padding: 120px 32px;
+    }
+
+    .cta-title {
+      font-family: var(--font-display);
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--color-text);
+    }
+
+    .cta-desc {
+      font-size: 17px;
+      color: var(--color-text-secondary);
+      max-width: 560px;
+      margin: 0 auto 40px;
+      line-height: 1.8;
+    }
+
+    .cta-actions {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ===== Footer ===== */
+    .footer {
+      padding: 48px 32px;
+      border-top: 1px solid var(--color-border);
+      text-align: center;
+    }
+
+    .footer-text {
+      font-size: 14px;
+      color: var(--color-text-muted);
+    }
+
+    .footer-disclaimer {
+      font-size: 13px;
+      color: var(--color-text-secondary);
+      margin-top: 12px;
+      font-weight: 500;
+    }
+
+    /* ===== Fade In Animation ===== */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ===== Data Viz Element ===== */
+    .risk-matrix {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .risk-cell {
+      aspect-ratio: 1;
+      border-radius: 4px;
+      transition: all 0.3s;
+    }
+
+    .risk-cell:hover {
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Nav -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="nav-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        </svg>
+        安泊 StaySafe
+      </div>
+      <div class="nav-links">
+        <a href="#problem" class="nav-link">问题洞察</a>
+        <a href="#solution" class="nav-link">解决方案</a>
+        <a href="#innovation" class="nav-link">核心创新</a>
+        <a href="#features" class="nav-link">产品功能</a>
+        <a href="staysafe-platform.html" class="nav-cta">体验Demo</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="fade-in">
+      <div class="hero-eyebrow">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z" />
+          <path d="M12 6v6l4 2" />
+        </svg>
+        AI驱动的酒店安全决策平台
+      </div>
+      <h1 class="hero-title">
+        探索<span class="highlight">安心住宿</span>
+      </h1>
+      <p class="hero-subtitle">
+        AI驱动的酒店安全决策平台，让每一位旅客都能看到真实的风险。
+      </p>
+      <div class="hero-actions">
+        <a href="staysafe-platform.html" class="btn-primary">
+          体验交互Demo
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="m12 5 7 7-7 7" />
+            <path d="M19 12H5" />
+          </svg>
+        </a>
+        <a href="#problem" class="btn-secondary">了解更多</a>
+      </div>
+    </div>
+    <div class="hero-stats fade-in">
+      <div class="stat">
+        <div class="stat-number">4级</div>
+        <div class="stat-label">可信度体系</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">4维</div>
+        <div class="stat-label">风险画像维度</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">3阶段</div>
+        <div class="stat-label">全周期覆盖</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">100%</div>
+        <div class="stat-label">匿名上报保护</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Problem -->
+  <section class="problem-section" id="problem" style="background: var(--color-bg-deep);">
+    <div class="section fade-in">
+      <div class="section-eyebrow">Problem</div>
+      <h2 class="section-title">被忽视的安全维度</h2>
+      <p class="section-desc">
+        主流酒店平台围绕价格、位置、卫生、服务建立评价体系，却唯独缺少独立、安全、透明的安全信息展示机制。
+      </p>
+      <div class="problem-grid">
+        <div class="problem-card">
+          <div class="problem-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.3-4.3" />
+            </svg>
+          </div>
+          <h3 class="problem-title">信息碎片化</h3>
+          <p class="problem-desc">
+            隐藏摄像头、门锁异常、工作人员擅入——这些信息散落在微博、小红书、新闻评论区，用户需要花费大量时间自行搜索。
+          </p>
+        </div>
+        <div class="problem-card">
+          <div class="problem-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              <path d="m9 12 2 2 4-4" />
+            </svg>
+          </div>
+          <h3 class="problem-title">真假难辨别</h3>
+          <p class="problem-desc">
+            用户不知道评论是真是假，有没有报警、有没有证据、有没有警方介入——缺少统一的可信度标识体系。
+          </p>
+        </div>
+        <div class="problem-card">
+          <div class="problem-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 16v-4M12 8h.01" />
+            </svg>
+          </div>
+          <h3 class="problem-title">维权无指引</h3>
+          <p class="problem-desc">
+            发现安全问题后，不知道怎么拍照取证、怎么报警、怎么投诉、怎么维权——缺乏系统化的指导流程。
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Solution -->
+  <section class="section" id="solution">
+    <div class="fade-in">
+      <div class="section-eyebrow">Solution</div>
+      <h2 class="section-title">用AI穿透信息迷雾</h2>
+      <p class="section-desc">
+        安泊 StaySafe 聚合多源公开数据与用户共建内容，通过AI分析生成风险画像，让安全信息从分散走向透明。
+      </p>
+    </div>
+    <div class="solution-content fade-in">
+      <div class="solution-text">
+        <h3>不贴标签，只给全貌</h3>
+        <p>
+          我们拒绝用"安全"或"不安全"这样的二元标签简化复杂的现实。
+          相反，我们展示隐私保护、门锁安全、人员管理、环境安全等多个维度的风险画像，
+          让用户根据自己的安全偏好做出判断。
+        </p>
+        <ul class="solution-list">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            AI自动分类评论和新闻中的安全事件
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            四级可信度体系，综合评估而非单条定论
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            风险趋势可视化，追踪时间维度变化
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            用户匿名共建，保护隐私的同时汇聚力量
+          </li>
+        </ul>
+      </div>
+      <div class="solution-visual">
+        <div class="solution-visual-inner">
+          <div class="solution-visual-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </div>
+          <div class="solution-visual-title">透明可见</div>
+          <div class="solution-visual-desc">让原本隐藏的风险浮出水面</div>
+          <div class="risk-matrix">
+            <div class="risk-cell" style="background: rgba(91, 154, 111, 0.3);"></div>
+            <div class="risk-cell" style="background: rgba(91, 154, 111, 0.6);"></div>
+            <div class="risk-cell" style="background: rgba(212, 165, 116, 0.4);"></div>
+            <div class="risk-cell" style="background: rgba(91, 154, 111, 0.5);"></div>
+            <div class="risk-cell" style="background: rgba(91, 154, 111, 0.7);"></div>
+            <div class="risk-cell" style="background: rgba(91, 154, 111, 0.4);"></div>
+            <div class="risk-cell" style="background: rgba(201, 104, 104, 0.5);"></div>
+            <div class="risk-cell" style="background: rgba(212, 165, 116, 0.3);"></div>
+            <div class="risk-cell" style="background: rgba(91, 154, 111, 0.5);"></div>
+            <div class="risk-cell" style="background: rgba(212, 165, 116, 0.5);"></div>
+            <div class="risk-cell" style="background: rgba(91, 154, 111, 0.6);"></div>
+            <div class="risk-cell" style="background: rgba(91, 154, 111, 0.4);"></div>
+            <div class="risk-cell" style="background: rgba(201, 104, 104, 0.4);"></div>
+            <div class="risk-cell" style="background: rgba(91, 154, 111, 0.3);"></div>
+            <div class="risk-cell" style="background: rgba(91, 154, 111, 0.5);"></div>
+            <div class="risk-cell" style="background: rgba(91, 154, 111, 0.7);"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Innovation -->
+  <section id="innovation" style="background: var(--color-bg-deep);">
+    <div class="section fade-in">
+      <div class="section-eyebrow">Innovation</div>
+      <h2 class="section-title">两个核心创新</h2>
+      <p class="section-desc">
+        我们重新定义了安全信息的展示方式和可信度评估标准。
+      </p>
+      <div class="innovation-grid">
+        <div class="innovation-card">
+          <div class="innovation-number">01</div>
+          <span class="innovation-tag">创新点一</span>
+          <h3 class="innovation-title">四级可信度体系</h3>
+          <p class="innovation-desc">
+            风险评分综合可信度等级，而非依据单条举报。从AI提取到官方佐证，每一级都有明确的证据标准，让用户知道信息从哪来、有多可靠。
+          </p>
+          <div class="credibility-demo">
+            <div class="cred-level">
+              <div class="cred-dot" style="background: #95A5A6;"></div>
+              <span class="cred-label" style="color: #95A5A6;">L1 AI提取</span>
+              <span class="cred-desc">公开评论/新闻</span>
+            </div>
+            <div class="cred-level">
+              <div class="cred-dot" style="background: #4A6FA5;"></div>
+              <span class="cred-label" style="color: #4A6FA5;">L2 用户证据</span>
+              <span class="cred-desc">图片/视频上传</span>
+            </div>
+            <div class="cred-level">
+              <div class="cred-dot" style="background: #5B9A6F;"></div>
+              <span class="cred-label" style="color: #5B9A6F;">L3 平台审核</span>
+              <span class="cred-desc">证据完整通过</span>
+            </div>
+            <div class="cred-level">
+              <div class="cred-dot" style="background: #D4A574;"></div>
+              <span class="cred-label" style="color: #B8945E;">L4 官方佐证</span>
+              <span class="cred-desc">报警回执/行政处罚</span>
+            </div>
+          </div>
+        </div>
+        <div class="innovation-card">
+          <div class="innovation-number">02</div>
+          <span class="innovation-tag">创新点二</span>
+          <h3 class="innovation-title">多维风险画像</h3>
+          <p class="innovation-desc">
+            不直接给酒店贴"安全/不安全"标签，而是展示隐私保护、门锁安全、人员管理、环境安全等多维风险，并展示时间趋势与证据来源——不同的人，不同的权重，自己的判断。
+          </p>
+          <div class="credibility-demo">
+            <div style="margin-bottom: 12px;">
+              <div class="flex justify-between"
+                style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;">
+                <span>隐私保护</span><span style="font-weight: 600; color: #C96868;">45分</span>
+              </div>
+              <div style="height: 6px; background: #EDF1F7; border-radius: 3px;">
+                <div style="width: 45%; height: 100%; background: #C96868; border-radius: 3px;"></div>
+              </div>
+            </div>
+            <div style="margin-bottom: 12px;">
+              <div class="flex justify-between"
+                style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;">
+                <span>门锁安全</span><span style="font-weight: 600; color: #D4A574;">58分</span>
+              </div>
+              <div style="height: 6px; background: #EDF1F7; border-radius: 3px;">
+                <div style="width: 58%; height: 100%; background: #D4A574; border-radius: 3px;"></div>
+              </div>
+            </div>
+            <div style="margin-bottom: 12px;">
+              <div class="flex justify-between"
+                style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;">
+                <span>人员管理</span><span style="font-weight: 600; color: #D4A574;">65分</span>
+              </div>
+              <div style="height: 6px; background: #EDF1F7; border-radius: 3px;">
+                <div style="width: 65%; height: 100%; background: #D4A574; border-radius: 3px;"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between"
+                style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;">
+                <span>环境安全</span><span style="font-weight: 600; color: #5B9A6F;">82分</span>
+              </div>
+              <div style="height: 6px; background: #EDF1F7; border-radius: 3px;">
+                <div style="width: 82%; height: 100%; background: #5B9A6F; border-radius: 3px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="section" id="features">
+    <div class="fade-in">
+      <div class="section-eyebrow">Product</div>
+      <h2 class="section-title">四大核心模块</h2>
+      <p class="section-desc">
+        覆盖入住前、入住中、入住后的全周期安全需求。
+      </p>
+    </div>
+    <div class="features-grid fade-in">
+      <div class="feature-card" onclick="location.href='staysafe-platform.html'">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.3-4.3" />
+          </svg>
+        </div>
+        <div class="feature-title">酒店查询</div>
+        <div class="feature-desc">城市筛选<br>安全评分排序</div>
+      </div>
+      <div class="feature-card" onclick="location.href='staysafe-platform.html#/hotel/1'">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          </svg>
+        </div>
+        <div class="feature-title">AI风险画像</div>
+        <div class="feature-desc">多维分析<br>趋势可视化</div>
+      </div>
+      <div class="feature-card" onclick="location.href='staysafe-platform.html#/safety-assistant'">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M9 11l3 3L22 4" />
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+          </svg>
+        </div>
+        <div class="feature-title">安全助手</div>
+        <div class="feature-desc">检查清单<br>事件上报</div>
+      </div>
+      <div class="feature-card" onclick="location.href='staysafe-platform.html#/rights-assistant'">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          </svg>
+        </div>
+        <div class="feature-title">维权助手</div>
+        <div class="feature-desc">取证指导<br>流程指引</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Journey -->
+  <section id="journey" style="background: var(--color-bg-deep);">
+    <div class="section fade-in">
+      <div class="section-eyebrow">Journey</div>
+      <h2 class="section-title">全周期安全守护</h2>
+      <p class="section-desc">
+        从预订前的风险评估，到入住中的安全检查，再到入住后的事件上报与维权——每一步都有我们。
+      </p>
+      <div class="journey-flow">
+        <div class="journey-card">
+          <span class="journey-phase">入住前</span>
+          <div class="journey-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+              stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.3-4.3" />
+            </svg>
+          </div>
+          <h3 class="journey-title">知道风险</h3>
+          <ul class="journey-list">
+            <li>搜索酒店，查看安全评分</li>
+            <li>浏览多维风险画像</li>
+            <li>了解历史安全事件</li>
+            <li>结合自身偏好做决策</li>
+          </ul>
+        </div>
+        <div class="journey-card">
+          <span class="journey-phase">入住中</span>
+          <div class="journey-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M9 11l3 3L22 4" />
+              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+            </svg>
+          </div>
+          <h3 class="journey-title">主动防护</h3>
+          <ul class="journey-list">
+            <li>入住安全检查清单</li>
+            <li>隐藏摄像头排查教程</li>
+            <li>门锁与防盗链检查</li>
+            <li>紧急联系方式速查</li>
+          </ul>
+        </div>
+        <div class="journey-card">
+          <span class="journey-phase">入住后</span>
+          <div class="journey-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+          </div>
+          <h3 class="journey-title">共建互助</h3>
+          <ul class="journey-list">
+            <li>匿名上报安全事件</li>
+            <li>上传证据提升可信度</li>
+            <li>AI维权全流程指导</li>
+            <li>帮助下一位入住者</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="fade-in">
+      <h2 class="cta-title">让下一位入住者<br>提前知道风险</h2>
+      <p class="cta-desc">
+        这不是一个一次性的信息查询工具，而是一个用户共建的安全生态。
+        每一次上报，每一条证据，都在让这个系统变得更可靠。
+      </p>
+      <div class="cta-actions">
+        <a href="staysafe-platform.html" class="btn-primary">
+          开始体验Demo
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="m12 5 7 7-7 7" />
+            <path d="M19 12H5" />
+          </svg>
+        </a>
+        <a href="#problem" class="btn-secondary">回到顶部</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-text">安泊 StaySafe · 酒店安全决策平台 · 创意概念演示</div>
+    <div class="footer-disclaimer">AI分析结论仅供参考</div>
+  </footer>
+
+  <script>
+    // Intersection Observer for fade-in animations
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.fade-in').forEach(el => {
+      observer.observe(el);
+    });
+
+    // Smooth scroll for nav links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>

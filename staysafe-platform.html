@@ -1,0 +1,3103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>安泊 StaySafe - 酒店安全决策平台</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://unpkg.com/vue-router@4/dist/vue-router.global.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-primary: #4A6FA5;
+      --color-primary-light: #6B8CBF;
+      --color-primary-dark: #3A5A8A;
+      --color-warning: #E8A87C;
+      --color-warning-light: #F0C6A8;
+      --color-ai: #8D7B68;
+      --color-ai-light: #A89580;
+      --color-success: #5B9A6F;
+      --color-success-light: #7BBF8F;
+      --color-danger: #C96868;
+      --color-danger-light: #D98888;
+      --color-bg-primary: #F5F7FA;
+      --color-bg-secondary: #FFFFFF;
+      --color-bg-tertiary: #EDF1F7;
+      --color-text-primary: #2C3E50;
+      --color-text-secondary: #5D6D7E;
+      --color-text-muted: #95A5A6;
+      --color-border: #E0E5EA;
+      --color-credibility-l1: #95A5A6;
+      --color-credibility-l2: #4A6FA5;
+      --color-credibility-l3: #5B9A6F;
+      --color-credibility-l4: #D4A574;
+      --font-family: 'Inter', system-ui, sans-serif;
+      --font-size-xs: 12px;
+      --font-size-sm: 14px;
+      --font-size-base: 16px;
+      --font-size-lg: 18px;
+      --font-size-xl: 24px;
+      --font-size-2xl: 32px;
+      --font-weight-light: 300;
+      --font-weight-normal: 400;
+      --font-weight-medium: 500;
+      --font-weight-semibold: 600;
+      --font-weight-bold: 700;
+      --spacing-xs: 4px;
+      --spacing-sm: 8px;
+      --spacing-md: 16px;
+      --spacing-lg: 24px;
+      --spacing-xl: 32px;
+      --spacing-2xl: 48px;
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
+      --shadow-sm: 0 1px 3px rgba(44, 62, 80, 0.06);
+      --shadow-md: 0 2px 8px rgba(44, 62, 80, 0.08);
+      --shadow-lg: 0 8px 24px rgba(44, 62, 80, 0.12);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-family);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-normal);
+      color: var(--color-text-primary);
+      background-color: var(--color-bg-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    #app {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ===== Navbar ===== */
+    .navbar {
+      background: var(--color-bg-secondary);
+      box-shadow: var(--shadow-sm);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .navbar-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--spacing-lg);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-primary);
+      text-decoration: none;
+    }
+
+    .logo svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .navbar-nav {
+      display: flex;
+      gap: var(--spacing-xs);
+      align-items: center;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-radius: var(--radius-md);
+      text-decoration: none;
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      transition: all 0.2s ease;
+    }
+
+    .nav-link svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .nav-link:hover {
+      background: var(--color-bg-tertiary);
+      color: var(--color-primary);
+    }
+
+    .nav-link.active {
+      background: rgba(74, 111, 165, 0.1);
+      color: var(--color-primary);
+    }
+
+    @media (max-width: 768px) {
+      .navbar-nav {
+        flex-wrap: wrap;
+      }
+
+      .nav-link span {
+        display: none;
+      }
+    }
+
+    /* ===== Layout ===== */
+    .main-content {
+      flex: 1;
+      padding: var(--spacing-xl) var(--spacing-lg);
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .page-header {
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .page-title {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .page-subtitle {
+      font-size: var(--font-size-base);
+      color: var(--color-text-secondary);
+    }
+
+    /* ===== Cards ===== */
+    .card {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-lg);
+      transition: all 0.3s ease;
+      border: 1px solid var(--color-border);
+    }
+
+    .card-interactive {
+      cursor: pointer;
+    }
+
+    .card-interactive:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-2px);
+      border-color: var(--color-primary-light);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--spacing-md);
+    }
+
+    .card-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+    }
+
+    .card-body {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+    }
+
+    /* ===== Buttons ===== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--spacing-sm) var(--spacing-lg);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      outline: none;
+      text-decoration: none;
+      gap: var(--spacing-sm);
+      font-family: inherit;
+    }
+
+    .btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .btn-primary {
+      background: var(--color-primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--color-primary-dark);
+      box-shadow: 0 4px 12px rgba(74, 111, 165, 0.3);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--color-primary);
+      border: 1px solid var(--color-border);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--color-primary);
+      background: rgba(74, 111, 165, 0.05);
+    }
+
+    .btn-warning {
+      background: var(--color-warning);
+      color: white;
+    }
+
+    .btn-warning:hover {
+      background: #D4986C;
+    }
+
+    .btn-success {
+      background: var(--color-success);
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #4A8A5F;
+    }
+
+    .btn-sm {
+      padding: var(--spacing-xs) var(--spacing-md);
+      font-size: var(--font-size-xs);
+    }
+
+    .btn-lg {
+      padding: var(--spacing-md) var(--spacing-xl);
+      font-size: var(--font-size-base);
+    }
+
+    .btn-block {
+      width: 100%;
+    }
+
+    /* ===== Inputs ===== */
+    .input,
+    .select,
+    .textarea {
+      padding: var(--spacing-sm) var(--spacing-md);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-primary);
+      background: var(--color-bg-secondary);
+      transition: all 0.2s ease;
+      outline: none;
+      width: 100%;
+      font-family: inherit;
+    }
+
+    .input:focus,
+    .select:focus,
+    .textarea:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.1);
+    }
+
+    .select-placeholder {
+      color: var(--color-text-muted);
+    }
+
+    .select-placeholder option:not(:disabled) {
+      color: var(--color-text-primary);
+    }
+
+    .textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .form-group {
+      margin-bottom: var(--spacing-md);
+    }
+
+    .form-label {
+      display: block;
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .search-bar {
+      display: flex;
+      gap: var(--spacing-sm);
+      flex-wrap: wrap;
+    }
+
+    .search-bar .input {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    /* ===== Progress Bar ===== */
+    .progress-bar {
+      height: 8px;
+      background: var(--color-bg-tertiary);
+      border-radius: 4px;
+      overflow: hidden;
+      margin: var(--spacing-sm) 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.6s ease;
+    }
+
+    .progress-fill.low {
+      background: var(--color-danger);
+    }
+
+    .progress-fill.medium {
+      background: var(--color-warning);
+    }
+
+    .progress-fill.high {
+      background: var(--color-success);
+    }
+
+    .score-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .score-label {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+    }
+
+    .score-value {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+    }
+
+    /* ===== Tags ===== */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      margin-right: var(--spacing-sm);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .tag-primary {
+      background: rgba(74, 111, 165, 0.1);
+      color: var(--color-primary);
+    }
+
+    .tag-warning {
+      background: rgba(232, 168, 124, 0.15);
+      color: #C4885C;
+    }
+
+    .tag-ai {
+      background: rgba(141, 123, 104, 0.1);
+      color: var(--color-ai);
+    }
+
+    .tag-success {
+      background: rgba(91, 154, 111, 0.1);
+      color: var(--color-success);
+    }
+
+    .tag-danger {
+      background: rgba(201, 104, 104, 0.1);
+      color: var(--color-danger);
+    }
+
+    /* ===== Credibility Badges ===== */
+    .credibility-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .credibility-l1 {
+      background: rgba(149, 165, 166, 0.15);
+      color: var(--color-credibility-l1);
+      border: 1px solid rgba(149, 165, 166, 0.3);
+    }
+
+    .credibility-l2 {
+      background: rgba(74, 111, 165, 0.15);
+      color: var(--color-credibility-l2);
+      border: 1px solid rgba(74, 111, 165, 0.3);
+    }
+
+    .credibility-l3 {
+      background: rgba(91, 154, 111, 0.15);
+      color: var(--color-credibility-l3);
+      border: 1px solid rgba(91, 154, 111, 0.3);
+    }
+
+    .credibility-l4 {
+      background: rgba(212, 165, 116, 0.15);
+      color: #B8945E;
+      border: 1px solid rgba(212, 165, 116, 0.3);
+    }
+
+    /* ===== Timeline ===== */
+    .timeline-item {
+      position: relative;
+      padding-left: var(--spacing-xl);
+      padding-bottom: var(--spacing-lg);
+      border-left: 2px solid var(--color-border);
+      margin-left: var(--spacing-sm);
+    }
+
+    .timeline-item:last-child {
+      padding-bottom: 0;
+      border-left-color: transparent;
+    }
+
+    .timeline-dot {
+      position: absolute;
+      left: -5px;
+      top: 0;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-primary);
+    }
+
+    .timeline-dot.l1 {
+      background: var(--color-credibility-l1);
+    }
+
+    .timeline-dot.l2 {
+      background: var(--color-credibility-l2);
+    }
+
+    .timeline-dot.l3 {
+      background: var(--color-credibility-l3);
+    }
+
+    .timeline-dot.l4 {
+      background: var(--color-credibility-l4);
+    }
+
+    .timeline-date {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .timeline-title {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-primary);
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .timeline-desc {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+    }
+
+    /* ===== Checklist ===== */
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--spacing-md);
+      padding: var(--spacing-md);
+      border-radius: var(--radius-md);
+      background: var(--color-bg-primary);
+      margin-bottom: var(--spacing-sm);
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .checklist-item:hover {
+      background: var(--color-bg-tertiary);
+    }
+
+    .checklist-item.completed {
+      background: rgba(91, 154, 111, 0.08);
+    }
+
+    .checklist-item.completed .checklist-text {
+      text-decoration: line-through;
+      color: var(--color-text-muted);
+    }
+
+    .checklist-checkbox {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      border: 2px solid var(--color-border);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      color: white;
+    }
+
+    .checklist-item.completed .checklist-checkbox {
+      background: var(--color-success);
+      border-color: var(--color-success);
+    }
+
+    .checklist-checkbox svg {
+      width: 14px;
+      height: 14px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .checklist-item.completed .checklist-checkbox svg {
+      opacity: 1;
+    }
+
+    .checklist-text {
+      flex: 1;
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+    }
+
+    .checklist-text strong {
+      display: block;
+      color: var(--color-text-primary);
+      margin-bottom: 2px;
+    }
+
+    /* ===== Step Cards ===== */
+    .step-card {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-md);
+      border-left: 4px solid var(--color-primary);
+      border-top: 1px solid var(--color-border);
+      border-right: 1px solid var(--color-border);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .step-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(74, 111, 165, 0.1);
+      color: var(--color-primary);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .step-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .step-desc {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      line-height: 1.8;
+    }
+
+    .step-desc ul {
+      margin-left: var(--spacing-lg);
+      margin-top: var(--spacing-sm);
+    }
+
+    .step-desc li {
+      margin-bottom: var(--spacing-xs);
+    }
+
+    /* ===== Modal ===== */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .modal-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-xl);
+      padding: var(--spacing-xl);
+      max-width: 560px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+    }
+
+    .modal-overlay.show .modal-content {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-lg);
+      padding-bottom: var(--spacing-md);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .modal-title {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .modal-close {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      background: var(--color-bg-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      color: var(--color-text-muted);
+    }
+
+    .modal-close:hover {
+      background: rgba(201, 104, 104, 0.1);
+      color: var(--color-danger);
+    }
+
+    /* ===== Hotel Card ===== */
+    .hotel-card {
+      display: flex;
+      gap: var(--spacing-md);
+      align-items: flex-start;
+    }
+
+    .hotel-card-img {
+      width: 120px;
+      height: 100px;
+      border-radius: var(--radius-md);
+      object-fit: cover;
+      flex-shrink: 0;
+      background: var(--color-bg-tertiary);
+    }
+
+    .hotel-card-content {
+      flex: 1;
+    }
+
+    .hotel-card-name {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .hotel-card-info {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--spacing-sm);
+      display: flex;
+      gap: var(--spacing-md);
+      flex-wrap: wrap;
+    }
+
+    .hotel-card-info span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* ===== Risk Dimension ===== */
+    .risk-dimension {
+      padding: var(--spacing-md);
+      border-radius: var(--radius-md);
+      background: var(--color-bg-primary);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .risk-dimension-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .risk-dimension-name {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-primary);
+    }
+
+    .risk-dimension-score {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-bold);
+    }
+
+    .risk-dimension-desc {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+      margin-top: var(--spacing-xs);
+    }
+
+    /* ===== Data Source ===== */
+    .data-source {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+      margin-top: var(--spacing-md);
+      padding-top: var(--spacing-md);
+      border-top: 1px dashed var(--color-border);
+    }
+
+    .data-source-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-right: var(--spacing-md);
+    }
+
+    /* ===== AI Banner ===== */
+    .ai-banner {
+      background: linear-gradient(135deg, rgba(141, 123, 104, 0.08), rgba(141, 123, 104, 0.03));
+      border: 1px solid rgba(141, 123, 104, 0.2);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-lg);
+      display: flex;
+      gap: var(--spacing-md);
+      align-items: flex-start;
+    }
+
+    .ai-banner-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(141, 123, 104, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--color-ai);
+    }
+
+    .ai-banner-content {
+      flex: 1;
+    }
+
+    .ai-banner-title {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-ai);
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .ai-banner-text {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      line-height: 1.7;
+    }
+
+    /* ===== Disclaimer ===== */
+    .disclaimer {
+      text-align: center;
+      padding: var(--spacing-lg);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+      border-top: 1px solid var(--color-border);
+      background: var(--color-bg-secondary);
+    }
+
+    /* ===== Footer ===== */
+    .footer {
+      background: var(--color-bg-secondary);
+      border-top: 1px solid var(--color-border);
+      padding: var(--spacing-xl) var(--spacing-lg);
+      text-align: center;
+    }
+
+    .footer-text {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+    }
+
+    .footer-disclaimer {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      margin-top: var(--spacing-sm);
+      font-weight: var(--font-weight-medium);
+    }
+
+    /* ===== Toast ===== */
+    .toast {
+      position: fixed;
+      top: 80px;
+      right: var(--spacing-lg);
+      background: var(--color-text-primary);
+      color: white;
+      padding: var(--spacing-md) var(--spacing-lg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      z-index: 2000;
+      font-size: var(--font-size-sm);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      animation: slideInRight 0.3s ease;
+    }
+
+    @keyframes slideInRight {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    /* ===== Trend Chart ===== */
+    .trend-chart {
+      position: relative;
+      height: 140px;
+      padding: var(--spacing-md) 0;
+    }
+
+    .trend-chart svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .trend-line {
+      fill: none;
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .trend-area {
+      fill-opacity: 0.15;
+    }
+
+    .trend-point {
+      cursor: pointer;
+      transition: r 0.2s ease;
+    }
+
+    .trend-point:hover {
+      r: 6;
+    }
+
+    .trend-grid {
+      stroke: var(--color-border);
+      stroke-width: 1;
+      stroke-dasharray: 4 4;
+    }
+
+    .trend-label {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+      text-anchor: middle;
+    }
+
+    /* ===== File Upload ===== */
+    .file-upload {
+      border: 2px dashed var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-xl);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: var(--color-text-muted);
+    }
+
+    .file-upload:hover {
+      border-color: var(--color-primary);
+      background: rgba(74, 111, 165, 0.03);
+      color: var(--color-primary);
+    }
+
+    .file-upload-icon {
+      font-size: 32px;
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .file-preview {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      border: 1px solid var(--color-border);
+      cursor: pointer;
+      background: var(--color-bg-secondary);
+    }
+
+    .file-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .file-icon {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text-muted);
+    }
+
+    .file-name {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      font-size: 10px;
+      padding: 2px 4px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .remove-icon {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      width: 16px;
+      height: 16px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    /* ===== Toggle Switch ===== */
+    .toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      cursor: pointer;
+    }
+
+    .toggle-switch {
+      width: 44px;
+      height: 24px;
+      border-radius: 12px;
+      background: var(--color-border);
+      position: relative;
+      transition: background 0.2s;
+    }
+
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: white;
+      transition: transform 0.2s;
+    }
+
+    .toggle.active .toggle-switch {
+      background: var(--color-primary);
+    }
+
+    .toggle.active .toggle-switch::after {
+      transform: translateX(20px);
+    }
+
+    /* ===== Split Layout ===== */
+    .split-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-lg);
+    }
+
+    .split-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--spacing-lg);
+    }
+
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @media (max-width: 768px) {
+
+      .split-2,
+      .split-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ===== Section Title ===== */
+    .section-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--spacing-md);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+    }
+
+    .section-title svg {
+      width: 20px;
+      height: 20px;
+      color: var(--color-primary);
+    }
+
+    /* ===== Safety Score Circle ===== */
+    .score-circle {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 4px solid;
+      margin: 0 auto;
+    }
+
+    .score-circle-value {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      line-height: 1;
+    }
+
+    .score-circle-label {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+      margin-top: 2px;
+    }
+
+    /* ===== Badge ===== */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+    }
+
+    .badge-primary {
+      background: rgba(74, 111, 165, 0.1);
+      color: var(--color-primary);
+    }
+
+    .badge-warning {
+      background: rgba(232, 168, 124, 0.15);
+      color: #C4885C;
+    }
+
+    .badge-success {
+      background: rgba(91, 154, 111, 0.1);
+      color: var(--color-success);
+    }
+
+    /* ===== Empty State ===== */
+    .empty-state {
+      text-align: center;
+      padding: var(--spacing-2xl);
+      color: var(--color-text-muted);
+    }
+
+    .empty-state-icon {
+      font-size: 48px;
+      margin-bottom: var(--spacing-md);
+      opacity: 0.5;
+    }
+
+    /* ===== Utility ===== */
+    .text-center {
+      text-align: center;
+    }
+
+    .text-muted {
+      color: var(--color-text-muted);
+    }
+
+    .text-sm {
+      font-size: var(--font-size-sm);
+    }
+
+    .text-xs {
+      font-size: var(--font-size-xs);
+    }
+
+    .mt-sm {
+      margin-top: var(--spacing-sm);
+    }
+
+    .mt-md {
+      margin-top: var(--spacing-md);
+    }
+
+    .mt-lg {
+      margin-top: var(--spacing-lg);
+    }
+
+    .mb-sm {
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .mb-md {
+      margin-bottom: var(--spacing-md);
+    }
+
+    .mb-lg {
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .flex {
+      display: flex;
+    }
+
+    .flex-col {
+      flex-direction: column;
+    }
+
+    .items-center {
+      align-items: center;
+    }
+
+    .justify-between {
+      justify-content: space-between;
+    }
+
+    .gap-sm {
+      gap: var(--spacing-sm);
+    }
+
+    .gap-md {
+      gap: var(--spacing-md);
+    }
+
+    .flex-wrap {
+      flex-wrap: wrap;
+    }
+
+    .w-full {
+      width: 100%;
+    }
+
+    /* Page transitions */
+    .page-enter-active {
+      transition: all 0.3s ease;
+    }
+
+    .page-enter-from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <!-- ===== Navbar ===== -->
+    <nav class="navbar">
+      <div class="navbar-inner">
+        <router-link to="/" class="logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          </svg>
+          安泊 StaySafe
+        </router-link>
+        <div class="navbar-nav">
+          <router-link to="/" class="nav-link" active-class="active" exact-active-class="active">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.3-4.3" />
+            </svg>
+            <span>酒店查询</span>
+          </router-link>
+          <router-link to="/safety-assistant" class="nav-link" active-class="active">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 11l3 3L22 4" />
+              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+            </svg>
+            <span>安全助手</span>
+          </router-link>
+          <router-link to="/rights-assistant" class="nav-link" active-class="active">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+            <span>维权助手</span>
+          </router-link>
+        </div>
+
+      </div>
+    </nav>
+
+    <!-- ===== Main Content ===== -->
+    <main class="main-content">
+      <router-view v-slot="{ Component }">
+        <transition name="page" mode="out-in">
+          <component :is="Component" />
+        </transition>
+      </router-view>
+    </main>
+
+    <!-- ===== Footer ===== -->
+    <footer class="footer">
+      <div class="footer-text">安泊 StaySafe - 酒店安全决策平台 | 概念演示Demo</div>
+      <div class="footer-disclaimer">AI分析结论仅供参考</div>
+    </footer>
+
+    <!-- ===== Toast ===== -->
+    <transition name="page">
+      <div v-if="toast.show" class="toast">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+          <polyline points="22 4 12 14.01 9 11.01" />
+        </svg>
+        <span>{{ toast.message }}</span>
+      </div>
+    </transition>
+  </div>
+
+  <script>
+    const { createApp, ref, reactive, computed, onMounted, watch, nextTick } = Vue;
+    const { createRouter, createWebHashHistory, useRouter, useRoute } = VueRouter;
+
+    // ===== AMap API Configuration =====
+    const AMap_API_KEY = '07c707965ecf73aee6a5ba0edc5340aa';
+
+    function analyzeSafetyFromComments(comments) {
+      let score = 80;
+      const tags = [];
+
+      if (!comments || comments.length === 0) {
+        return { score: 75, tags: ['数据不足'] };
+      }
+
+      const negativeKeywords = ['偷拍', '摄像头', '针孔', '隐私', '门锁', '安全', '尾随', '骚扰', '报警', '小偷', '丢失', '损坏'];
+      const positiveKeywords = ['安全', '放心', '安心', '舒适', '干净', '服务好', '满意'];
+
+      let negativeCount = 0;
+      let positiveCount = 0;
+
+      comments.forEach(c => {
+        const text = (c.text || c.content || '').toLowerCase();
+        negativeKeywords.forEach(kw => {
+          if (text.includes(kw)) negativeCount++;
+        });
+        positiveKeywords.forEach(kw => {
+          if (text.includes(kw)) positiveCount++;
+        });
+      });
+
+      score = Math.max(50, Math.min(95, 80 + (positiveCount * 3) - (negativeCount * 5)));
+
+      if (negativeCount >= 3) {
+        tags.push('不推荐独行女性');
+      }
+      if (negativeCount >= 2) {
+        tags.push('隐私需关注');
+      }
+      if (negativeCount >= 1) {
+        tags.push('设备老旧');
+      }
+      if (positiveCount >= 5) {
+        tags.push('推荐入住');
+      }
+      if (positiveCount >= 3 && negativeCount === 0) {
+        tags.push('行业标杆');
+      }
+
+      if (tags.length === 0) {
+        tags.push('综合较好');
+      }
+
+      return { score, tags };
+    }
+
+    async function fetchHotelsFromAMap(city) {
+      try {
+        console.log('Fetching hotels for city:', city);
+        const url = `/api/amap/v3/place/text?keywords=${encodeURIComponent(city + '酒店')}&city=${encodeURIComponent(city)}&output=json&offset=20&extensions=all`;
+        console.log('Proxy API URL:', url);
+
+        const response = await fetch(url);
+        console.log('Response status:', response.status);
+
+        const data = await response.json();
+        console.log('AMap API response:', data);
+        if (data.pois && data.pois.length > 0) {
+          console.log('First POI full data:', JSON.stringify(data.pois[0], null, 2));
+        }
+
+        if (data.status === '1' && data.pois && data.pois.length > 0) {
+          console.log('Got', data.pois.length, 'hotels from AMap');
+
+          const hotelsWithComments = [];
+          for (let index = 0; index < data.pois.length; index++) {
+            const poi = data.pois[index];
+            const photos = poi.photos && poi.photos.length > 0 ? poi.photos : [];
+            const imageUrl = photos.length > 0 ? photos[0].url : 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=modern%20luxury%20hotel%20building%20exterior%20clean%20professional%20architectural%20photography&image_size=landscape_4_3';
+
+            const amapRating = poi.rating || poi.score;
+            const amapPrice = poi.cost || poi.price;
+
+            let comments = [];
+            if (poi.id) {
+              comments = await fetchPOIComments(poi.id);
+            }
+
+            console.log('POI', index, 'rating:', amapRating, 'price:', amapPrice, 'comments:', comments.length);
+
+            const safetyResult = analyzeSafetyFromComments(comments);
+
+            hotelsWithComments.push({
+              id: 'amap_' + poi.id || index,
+              name: poi.name,
+              city: city,
+              location: poi.address || poi.location,
+              price: amapPrice ? parseInt(amapPrice) : Math.floor(Math.random() * 1500) + 300,
+              rating: amapRating ? parseFloat(amapRating) : parseFloat((Math.random() * 1.5 + 3.5).toFixed(1)),
+              safetyScore: safetyResult.score,
+              openDate: `${Math.floor(Math.random() * 15) + 2010}年`,
+              renovateDate: `${Math.floor(Math.random() * 5) + 2020}年`,
+              riskTags: safetyResult.tags,
+              image: imageUrl,
+              dataSource: 'amap',
+              poiId: poi.id,
+              comments: comments
+            });
+          }
+          return hotelsWithComments;
+        } else {
+          console.log('AMap API returned no results or status error:', data.status);
+          return null;
+        }
+      } catch (error) {
+        console.error('AMap API error:', error);
+        return null;
+      }
+    }
+
+    async function fetchPOIComments(poiId) {
+      try {
+        const url = `/api/amap/v3/place/detail?output=json&id=${poiId}`;
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.status === '1' && data.pois && data.pois.length > 0) {
+          const poi = data.pois[0];
+          if (poi.comment && poi.comment.length > 0) {
+            return poi.comment.slice(0, 5).map(c => ({
+              user: c.user || '匿名用户',
+              content: c.content || '',
+              time: c.time || '',
+              rating: parseFloat(c.score || 5)
+            }));
+          }
+        }
+        return [];
+      } catch (error) {
+        console.error('Fetch comments error:', error);
+        return [];
+      }
+    }
+
+    // ===== Mock Data =====
+    const mockHotels = [
+      {
+        id: '1', name: '北京国贸大酒店', city: '北京', location: '朝阳区建国门外大街1号',
+        price: 1280, rating: 4.8, safetyScore: 78, openDate: '2015年', renovateDate: '2023年',
+        riskTags: ['设备老化', '隐私需关注', '综合较好'],
+        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=modern%20luxury%20hotel%20building%20exterior%20clean%20architectural%20photography&image_size=landscape_4_3'
+      },
+      {
+        id: '2', name: '上海外滩悦榕庄', city: '上海', location: '黄浦区中山东一路32号',
+        price: 2680, rating: 4.9, safetyScore: 92, openDate: '2018年', renovateDate: '2024年',
+        riskTags: ['行业标杆', '推荐入住', '门禁可靠'],
+        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=elegant%20boutique%20hotel%20exterior%20riverside%20modern%20architecture&image_size=landscape_4_3'
+      },
+      {
+        id: '3', name: '广州珠江新城W酒店', city: '广州', location: '天河区珠江新城冼村路26号',
+        price: 1580, rating: 4.7, safetyScore: 65, openDate: '2014年', renovateDate: '2022年',
+        riskTags: ['不推荐独行女性', '隐私需关注', '设备老旧'],
+        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=modern%20glass%20hotel%20tower%20city%20skyline%20contemporary%20architecture&image_size=landscape_4_3'
+      },
+      {
+        id: '4', name: '杭州西湖国宾馆', city: '杭州', location: '西湖区杨公堤1号',
+        price: 1880, rating: 4.9, safetyScore: 88, openDate: '1979年', renovateDate: '2020年',
+        riskTags: ['推荐入住', '适合常住', '门禁可靠'],
+        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=traditional%20chinese%20garden%20hotel%20lakeside%20serene%20architecture&image_size=landscape_4_3'
+      },
+      {
+        id: '5', name: '成都太古里博舍酒店', city: '成都', location: '锦江区笔帖式街81号',
+        price: 1980, rating: 4.8, safetyScore: 85, openDate: '2015年', renovateDate: '2023年',
+        riskTags: ['综合较好', '门禁可靠', '性价比高'],
+        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=modern%20boutique%20hotel%20courtyard%20minimalist%20design%20warm%20lighting&image_size=landscape_4_3'
+      },
+      {
+        id: '6', name: '深圳湾安达仕酒店', city: '深圳', location: '南山区海德一道88号',
+        price: 1680, rating: 4.6, safetyScore: 58, openDate: '2019年', renovateDate: '2022年',
+        riskTags: ['不推荐独行女性', '隐私需关注', '设备老旧'],
+        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=contemporary%20high-rise%20hotel%20glass%20facade%20urban%20cityscape&image_size=landscape_4_3'
+      }
+    ];
+
+    const hotelDetails = {
+      '1': {
+        id: '1', name: '北京国贸大酒店', city: '北京', location: '朝阳区建国门外大街1号',
+        price: 1280, rating: 4.8, safetyScore: 78,
+        openDate: '2015年', renovateDate: '2023年',
+        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=modern%20luxury%20hotel%20building%20exterior%20clean%20architectural%20photography&image_size=landscape_4_3',
+        riskDimensions: [
+          { name: '隐私保护', score: 72, description: '近12个月无偷拍事件，但有1条评论提及"走廊摄像头角度覆盖房间门口"，已核实为正常安防范围', trend: 'stable', credibility: 'L2' },
+          { name: '门锁安全', score: 55, description: '6条评论反馈"门锁松动"、"电子锁反应迟钝"，集中在6-8楼层，酒店已采购新锁待更换', trend: 'down', credibility: 'L2' },
+          { name: '人员管理', score: 85, description: '员工制服规范，3条评论提及"前台主动提醒安全注意事项"，2024年1月引入第三方背调', trend: 'stable', credibility: 'L3' },
+          { name: '环境安全', score: 88, description: '消防通道标识清晰，12条评论提及"隔音效果好"，空气检测报告显示PM2.5达标', trend: 'stable', credibility: 'L3' }
+        ],
+        riskTags: ['设备老化', '隐私需关注', '综合较好'],
+        safetySummary: 'AI分析124条评论发现：6条提及门锁问题（集中在6-8楼），3条表扬前台安全提醒，1条质疑走廊摄像头角度。建议入住9层以上并检查门锁反锁功能。',
+        events: [
+          { id: 'e1', type: '门锁异常', description: '用户"旅行者2024"反馈603房间电子锁延迟3秒才上锁，已安排维修', date: '2024-03-15', credibility: 'L2', evidenceCount: 2 },
+          { id: 'e2', type: '人员管理', description: '完成全员背景审核升级，引入"i背调"第三方机构', date: '2024-01-20', credibility: 'L3', evidenceCount: 5 },
+          { id: 'e3', type: '消防安全', description: '朝阳区消防救援大队年度检查通过，消防设施评级B级', date: '2024-05-10', credibility: 'L4', evidenceCount: 1 },
+          { id: 'e4', type: '隐私关注', description: '用户"匿名"发帖质疑走廊摄像头角度，经实地测量确认合规', date: '2023-11-08', credibility: 'L1', evidenceCount: 0 }
+        ],
+        dataSources: ['公开评论(89条)', '用户评价(35条)', '用户上报(6条)', '消防通报(1份)'],
+        sampleSize: 131,
+        trendData: [
+          { month: '1月', value: 75 },
+          { month: '2月', value: 73 },
+          { month: '3月', value: 70 },
+          { month: '4月', value: 72 },
+          { month: '5月', value: 76 },
+          { month: '6月', value: 78 }
+        ]
+      },
+      '2': {
+        id: '2', name: '上海外滩悦榕庄', city: '上海', location: '黄浦区中山东一路32号',
+        price: 2680, rating: 4.9, safetyScore: 92,
+        openDate: '2018年', renovateDate: '2024年',
+        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=elegant%20boutique%20hotel%20exterior%20riverside%20modern%20architecture&image_size=landscape_4_3',
+        riskDimensions: [
+          { name: '隐私保护', score: 95, description: '近24个月零偷拍事件，18条评论提及"提供免费防偷拍检测服务"，浴室玻璃采用防窥设计', trend: 'up', credibility: 'L3' },
+          { name: '门锁安全', score: 92, description: '2024年2月完成全楼层"华为智慧门锁"升级，支持指纹+密码+NFC三重认证', trend: 'up', credibility: 'L3' },
+          { name: '人员管理', score: 94, description: '员工需通过三级安全培训，12条评论表扬"管家式服务"，夜间巡逻频率每2小时一次', trend: 'stable', credibility: 'L3' },
+          { name: '环境安全', score: 90, description: '消防设施A级，智能烟感系统联动喷淋，25条评论提及"江景房视野开阔，逃生通道明确"', trend: 'stable', credibility: 'L4' }
+        ],
+        riskTags: ['行业标杆', '推荐入住', '门禁可靠'],
+        safetySummary: 'AI分析256条评论发现：18条提及防偷拍服务，12条表扬安全服务，0条负面安全反馈。2024年完成门锁系统升级，消防检查A级。',
+        events: [
+          { id: 'e1', type: '消防安全', description: '黄浦区消防救援大队年度检查评级A级，智能烟感系统获专项表扬', date: '2024-04-15', credibility: 'L4', evidenceCount: 1 },
+          { id: 'e2', type: '门锁升级', description: '完成全楼层华为智慧门锁升级，支持三重认证', date: '2024-02-01', credibility: 'L3', evidenceCount: 3 },
+          { id: 'e3', type: '隐私保护', description: '新增"安心入住"服务，提供免费电子设备检测', date: '2024-03-10', credibility: 'L3', evidenceCount: 2 }
+        ],
+        dataSources: ['公开评论(156条)', '用户评价(100条)', '用户上报(3条)', '消防通报(2份)'],
+        sampleSize: 261,
+        trendData: [
+          { month: '1月', value: 88 },
+          { month: '2月', value: 89 },
+          { month: '3月', value: 90 },
+          { month: '4月', value: 91 },
+          { month: '5月', value: 92 },
+          { month: '6月', value: 92 }
+        ]
+      },
+      '3': {
+        id: '3', name: '广州珠江新城W酒店', city: '广州', location: '天河区珠江新城冼村路26号',
+        price: 1580, rating: 4.7, safetyScore: 65,
+        openDate: '2014年', renovateDate: '2022年',
+        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=modern%20glass%20hotel%20tower%20city%20skyline%20contemporary%20architecture&image_size=landscape_4_3',
+        riskDimensions: [
+          { name: '隐私保护', score: 45, description: '近6个月收到3条偷拍疑似反馈，用户"小猫钓鱼"在浴室发现疑似针孔摄像头并拍照取证，平台已标记高风险', trend: 'down', credibility: 'L2' },
+          { name: '门锁安全', score: 58, description: '9条评论反馈"12-15楼电子锁卡顿"，1条反馈"房门从外部可轻易打开"，酒店承诺Q3更换', trend: 'down', credibility: 'L2' },
+          { name: '人员管理', score: 65, description: '用户"匿名"反馈凌晨2点有工作人员未经敲门刷卡进入房间，酒店回应"走错房间"，未提供监控记录', trend: 'down', credibility: 'L1' },
+          { name: '环境安全', score: 82, description: '消防检查合格，但8条评论提及"走廊灯光昏暗"，电梯内无紧急呼叫按钮标识', trend: 'stable', credibility: 'L3' }
+        ],
+        riskTags: ['不推荐独行女性', '隐私需关注', '设备老旧'],
+        safetySummary: 'AI分析98条评论发现：3条偷拍疑似（1条有图片），9条门锁问题，1条工作人员擅入。建议女性旅客谨慎选择，入住后立即检查门锁和摄像头。',
+        events: [
+          { id: 'e1', type: '偷拍疑似', description: '用户"小猫钓鱼"在1408浴室发现可疑圆形设备并拍照，平台已标记高风险', date: '2024-06-20', credibility: 'L2', evidenceCount: 3 },
+          { id: 'e2', type: '门锁异常', description: '用户"夜行者"反馈1203房间电子锁从走廊可直接打开', date: '2024-05-15', credibility: 'L2', evidenceCount: 4 },
+          { id: 'e3', type: '人员擅入', description: '用户反馈凌晨2:15有工作人员未敲门刷卡进入房间，酒店称"走错房"', date: '2024-04-10', credibility: 'L1', evidenceCount: 1 },
+          { id: 'e4', type: '消防安全', description: '天河区消防检查合格，消防设施正常', date: '2024-03-22', credibility: 'L3', evidenceCount: 1 }
+        ],
+        dataSources: ['公开评论(62条)', '用户评价(36条)', '用户上报(12条)', '消防通报(1份)'],
+        sampleSize: 111,
+        trendData: [
+          { month: '1月', value: 72 },
+          { month: '2月', value: 70 },
+          { month: '3月', value: 68 },
+          { month: '4月', value: 67 },
+          { month: '5月', value: 66 },
+          { month: '6月', value: 65 }
+        ]
+      },
+      '4': {
+        id: '4', name: '杭州西湖国宾馆', city: '杭州', location: '西湖区杨公堤1号',
+        price: 1880, rating: 4.9, safetyScore: 88,
+        openDate: '1979年', renovateDate: '2020年',
+        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=traditional%20chinese%20garden%20hotel%20lakeside%20serene%20architecture&image_size=landscape_4_3',
+        riskDimensions: [
+          { name: '隐私保护', score: 88, description: '近18个月零偷拍事件，15条评论提及"房间私密性好"，园林式布局保证独立空间', trend: 'stable', credibility: 'L3' },
+          { name: '门锁安全', score: 92, description: '2020年装修时更换全套智能门锁，支持人脸+密码+NFC，28条评论表扬"反应灵敏"', trend: 'up', credibility: 'L3' },
+          { name: '人员管理', score: 85, description: '服务人员需经过礼仪培训，5条评论提及"管家式服务"，夜间每1小时巡逻一次', trend: 'stable', credibility: 'L2' },
+          { name: '环境安全', score: 87, description: '消防设施定期检查，园林式布局消防通道清晰，12条评论提及"空气清新，环境安静"', trend: 'stable', credibility: 'L3' }
+        ],
+        riskTags: ['推荐入住', '适合常住', '门禁可靠'],
+        safetySummary: 'AI分析186条评论发现：15条表扬隐私保护，28条表扬门锁系统，5条表扬服务。2020年完成全面装修，消防检查合格。',
+        events: [
+          { id: 'e1', type: '消防安全', description: '西湖区消防救援大队年度检查通过', date: '2024-04-08', credibility: 'L3', evidenceCount: 1 },
+          { id: 'e2', type: '门锁升级', description: '完成全楼智能门锁更换，支持人脸识别', date: '2020-12-01', credibility: 'L3', evidenceCount: 3 },
+          { id: 'e3', type: '隐私保护', description: '新增园林围挡，提升客房私密性', date: '2021-03-15', credibility: 'L2', evidenceCount: 2 }
+        ],
+        dataSources: ['公开评论(128条)', '用户评价(58条)', '用户上报(4条)', '消防通报(1份)'],
+        sampleSize: 191,
+        trendData: [
+          { month: '1月', value: 85 },
+          { month: '2月', value: 86 },
+          { month: '3月', value: 87 },
+          { month: '4月', value: 88 },
+          { month: '5月', value: 88 },
+          { month: '6月', value: 88 }
+        ]
+      },
+      '5': {
+        id: '5', name: '成都太古里博舍酒店', city: '成都', location: '锦江区笔帖式街81号',
+        price: 1980, rating: 4.8, safetyScore: 85,
+        openDate: '2015年', renovateDate: '2023年',
+        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=modern%20boutique%20hotel%20courtyard%20minimalist%20design%20warm%20lighting&image_size=landscape_4_3',
+        riskDimensions: [
+          { name: '隐私保护', score: 82, description: '近12个月无偷拍事件，7条评论提及"隔音效果好"，浴室采用磨砂玻璃设计', trend: 'stable', credibility: 'L2' },
+          { name: '门锁安全', score: 88, description: '2023年装修时升级电子门锁，支持密码+NFC，12条评论表扬"操作便捷"', trend: 'up', credibility: 'L3' },
+          { name: '人员管理', score: 80, description: '员工服务态度良好，3条评论提及"主动询问需求"，无负面反馈', trend: 'stable', credibility: 'L2' },
+          { name: '环境安全', score: 86, description: '消防设施完善，最近检查2024年3月通过，8条评论提及"公共区域宽敞明亮"', trend: 'stable', credibility: 'L3' }
+        ],
+        riskTags: ['综合较好', '门禁可靠', '性价比高'],
+        safetySummary: 'AI分析156条评论发现：7条表扬隔音效果，12条表扬门锁系统，3条表扬服务态度。2023年完成装修升级，整体安全状况良好。',
+        events: [
+          { id: 'e1', type: '消防安全', description: '锦江区消防检查通过', date: '2024-03-15', credibility: 'L3', evidenceCount: 1 },
+          { id: 'e2', type: '装修升级', description: '完成全楼装修升级，更换电子门锁', date: '2023-06-30', credibility: 'L3', evidenceCount: 2 },
+          { id: 'e3', type: '隐私保护', description: '浴室玻璃更换为磨砂材质', date: '2023-04-10', credibility: 'L2', evidenceCount: 1 }
+        ],
+        dataSources: ['公开评论(98条)', '用户评价(58条)', '用户上报(3条)', '消防通报(1份)'],
+        sampleSize: 160,
+        trendData: [
+          { month: '1月', value: 82 },
+          { month: '2月', value: 83 },
+          { month: '3月', value: 84 },
+          { month: '4月', value: 85 },
+          { month: '5月', value: 85 },
+          { month: '6月', value: 85 }
+        ]
+      },
+      '6': {
+        id: '6', name: '深圳湾安达仕酒店', city: '深圳', location: '南山区海德一道88号',
+        price: 1680, rating: 4.6, safetyScore: 58,
+        openDate: '2019年', renovateDate: '2022年',
+        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=contemporary%20high-rise%20hotel%20glass%20facade%20urban%20cityscape&image_size=landscape_4_3',
+        riskDimensions: [
+          { name: '隐私保护', score: 48, description: '近6个月收到2条偷拍疑似反馈，用户"匿名"反馈房间镜子疑似双面镜，平台已标记风险', trend: 'down', credibility: 'L2' },
+          { name: '门锁安全', score: 52, description: '8条评论反馈"电子锁反应慢"，2条反馈"房门关不紧"，酒店称"正在检修"', trend: 'down', credibility: 'L2' },
+          { name: '人员管理', score: 65, description: '用户"夜归人"反馈凌晨1点有工作人员未敲门尝试刷卡进入房间', trend: 'down', credibility: 'L1' },
+          { name: '环境安全', score: 67, description: '消防检查合格，但15条评论提及"走廊灯光昏暗"，部分消防通道标识不清晰', trend: 'stable', credibility: 'L3' }
+        ],
+        riskTags: ['不推荐独行女性', '隐私需关注', '设备老旧'],
+        safetySummary: 'AI分析112条评论发现：2条偷拍疑似，8条门锁问题，1条工作人员擅入。建议女性旅客谨慎选择，入住后检查门锁和镜子。',
+        events: [
+          { id: 'e1', type: '偷拍疑似', description: '用户反馈房间镜子疑似双面镜', date: '2024-06-15', credibility: 'L2', evidenceCount: 2 },
+          { id: 'e2', type: '门锁异常', description: '用户反馈1802房间电子锁卡顿，需多次刷卡', date: '2024-05-20', credibility: 'L2', evidenceCount: 3 },
+          { id: 'e3', type: '人员擅入', description: '用户反馈凌晨1:10有工作人员未敲门尝试刷卡', date: '2024-04-25', credibility: 'L1', evidenceCount: 1 },
+          { id: 'e4', type: '消防安全', description: '南山区消防检查合格', date: '2024-03-28', credibility: 'L3', evidenceCount: 1 }
+        ],
+        dataSources: ['公开评论(72条)', '用户评价(40条)', '用户上报(8条)', '消防通报(1份)'],
+        sampleSize: 121,
+        trendData: [
+          { month: '1月', value: 65 },
+          { month: '2月', value: 63 },
+          { month: '3月', value: 61 },
+          { month: '4月', value: 60 },
+          { month: '5月', value: 59 },
+          { month: '6月', value: 58 }
+        ]
+      }
+    };
+
+    function getHotelDetail(id) {
+      const storedHotels = JSON.parse(localStorage.getItem('staySafe_hotels') || '{}');
+      return storedHotels[id] || hotelDetails[id] || null;
+    }
+
+    // ===== Credibility Info =====
+    const credibilityInfo = {
+      L1: { label: 'AI提取', desc: 'AI提取自公开评论/新闻', class: 'credibility-l1' },
+      L2: { label: '用户证据', desc: '用户上传图片/视频', class: 'credibility-l2' },
+      L3: { label: '平台审核', desc: '平台审核通过', class: 'credibility-l3' },
+      L4: { label: '官方佐证', desc: '报警回执/行政处罚', class: 'credibility-l4' }
+    };
+
+    // ===== Global State =====
+    const toast = reactive({ show: false, message: '' });
+    function showToast(msg) {
+      toast.message = msg;
+      toast.show = true;
+      setTimeout(() => { toast.show = false; }, 3000);
+    }
+
+    // ===== Helper Functions =====
+    function getScoreClass(score) {
+      if (score >= 80) return 'high';
+      if (score >= 60) return 'medium';
+      return 'low';
+    }
+    function getScoreColor(score) {
+      if (score >= 80) return '#5B9A6F';
+      if (score >= 60) return '#E8A87C';
+      return '#C96868';
+    }
+    function getTrendIcon(trend) {
+      if (trend === 'up') return '↑';
+      if (trend === 'down') return '↓';
+      return '→';
+    }
+    function getTrendColor(trend) {
+      if (trend === 'up') return '#5B9A6F';
+      if (trend === 'down') return '#C96868';
+      return '#95A5A6';
+    }
+
+    // ===== Home Page Component ===== -->
+    const HomePage = {
+      setup() {
+        const searchKeyword = ref('');
+        const selectedCity = ref('');
+        const sortBy = ref('safety');
+        const showSuggestions = ref(false);
+        const hotels = ref([]);
+        const loading = ref(true);
+        const currentDataSource = ref('mock');
+        const useMockData = ref(false);
+        const cities = [
+          '全部', '北京', '上海', '广州', '深圳', '杭州', '成都', '重庆', '武汉', '南京',
+          '天津', '苏州', '西安', '长沙', '郑州', '东莞', '青岛', '沈阳', '宁波', '佛山',
+          '合肥', '大连', '厦门', '哈尔滨', '济南', '福州', '长春', '石家庄', '南宁', '昆明',
+          '无锡', '常州', '南通', '温州', '绍兴', '嘉兴', '金华', '台州', '惠州', '珠海',
+          '中山', '江门', '汕头', '湛江', '肇庆', '揭阳', '清远', '韶关', '潮州', '阳江'
+        ];
+
+        async function loadHotels(city) {
+          loading.value = true;
+          currentDataSource.value = 'loading';
+          if (useMockData.value) {
+            if (city && city !== '全部') {
+              hotels.value = mockHotels.filter(h => h.city === city);
+              if (hotels.value.length === 0) {
+                hotels.value = [...mockHotels];
+              }
+            } else {
+              hotels.value = [...mockHotels];
+            }
+            currentDataSource.value = 'mock';
+            loading.value = false;
+            return;
+          }
+          const apiCity = city && city !== '全部' ? city : '北京';
+          const apiHotels = await fetchHotelsFromAMap(apiCity);
+          if (apiHotels && apiHotels.length > 0) {
+            hotels.value = apiHotels;
+            currentDataSource.value = 'amap';
+            console.log('Loaded', apiHotels.length, 'hotels from AMap');
+          } else {
+            hotels.value = mockHotels.filter(h => h.city === city);
+            if (hotels.value.length === 0) {
+              hotels.value = [...mockHotels];
+            }
+            currentDataSource.value = 'mock';
+            console.log('Fallback to mock data, got', hotels.value.length, 'hotels');
+          }
+          loading.value = false;
+        }
+
+        onMounted(() => {
+          loadHotels('');
+          selectedCity.value = '';
+        });
+
+        watch(selectedCity, (newCity) => {
+          loadHotels(newCity);
+        });
+
+        watch(useMockData, () => {
+          loadHotels(selectedCity.value);
+        });
+
+        const filteredHotels = computed(() => {
+          const storedHotels = JSON.parse(localStorage.getItem('staySafe_hotels') || '{}');
+          const storedList = Object.values(storedHotels).map(h => ({
+            id: h.id,
+            name: h.name,
+            city: h.city,
+            location: h.location,
+            price: h.price,
+            rating: h.rating,
+            safetyScore: h.safetyScore,
+            riskTags: h.riskTags,
+            openDate: h.openDate,
+            renovateDate: h.renovateDate,
+            image: h.image
+          }));
+          let result;
+          if (!useMockData.value && hotels.value.length > 0) {
+            result = [...hotels.value];
+          } else {
+            result = storedList.length > 0 ? [...storedList] : [...mockHotels];
+          }
+          if (selectedCity.value && selectedCity.value !== '全部') {
+            result = result.filter(h => h.city === selectedCity.value || h.city === '');
+          }
+          if (searchKeyword.value) {
+            const kw = searchKeyword.value.toLowerCase();
+            result = result.filter(h => h.name.toLowerCase().includes(kw) || (h.location && h.location.toLowerCase().includes(kw)));
+          }
+          if (sortBy.value === 'safety') result.sort((a, b) => b.safetyScore - a.safetyScore);
+          else if (sortBy.value === 'price') result.sort((a, b) => a.price - b.price);
+          else if (sortBy.value === 'rating') result.sort((a, b) => b.rating - a.rating);
+          return result;
+        });
+
+        const suggestions = computed(() => {
+          if (!searchKeyword.value) return [];
+          const kw = searchKeyword.value.toLowerCase();
+          const result = [];
+          const storedHotels = JSON.parse(localStorage.getItem('staySafe_hotels') || '{}');
+          const storedList = Object.values(storedHotels).map(h => ({
+            id: h.id,
+            name: h.name,
+            city: h.city
+          }));
+          const sourceHotels = storedList.length > 0 ? storedList : (hotels.value.length > 0 ? hotels.value : mockHotels);
+          sourceHotels.forEach(h => {
+            if (h.name.toLowerCase().includes(kw)) {
+              result.push({ type: 'hotel', label: h.name, value: h.name });
+            }
+            if (h.city && h.city.toLowerCase().includes(kw) && !result.find(s => s.label === h.city)) {
+              result.push({ type: 'city', label: h.city + ' (城市)', value: h.city });
+            }
+          });
+          return result.slice(0, 5);
+        });
+
+        const router = useRouter();
+        function goToDetail(id) { router.push('/hotel/' + id); }
+        function selectSuggestion(item) {
+          searchKeyword.value = item.value;
+          showSuggestions.value = false;
+          if (item.type === 'city') {
+            selectedCity.value = item.value;
+          }
+        }
+        function handleSearch() { showSuggestions.value = false; }
+        function blurSuggestions() {
+          setTimeout(() => { showSuggestions.value = false; }, 200);
+        }
+
+        const currentLocation = ref('');
+        const locationLoading = ref(false);
+        const showCityDropdown = ref(false);
+        const hotCities = ['北京', '上海', '广州', '深圳', '杭州', '成都', '重庆', '武汉', '西安', '南京'];
+
+        const searchHistory = ref(() => {
+          const saved = localStorage.getItem('staySafe_searchHistory');
+          return saved ? JSON.parse(saved) : [];
+        });
+
+        function saveToHistory(city) {
+          if (!city || city === '全部') return;
+          const idx = searchHistory.value.indexOf(city);
+          if (idx > -1) searchHistory.value.splice(idx, 1);
+          searchHistory.value.unshift(city);
+          if (searchHistory.value.length > 10) searchHistory.value.pop();
+          localStorage.setItem('staySafe_searchHistory', JSON.stringify(searchHistory.value));
+        }
+
+        function getCurrentLocation() {
+          locationLoading.value = true;
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+              (position) => {
+                currentLocation.value = '定位中...';
+                setTimeout(() => {
+                  currentLocation.value = '北京';
+                  locationLoading.value = false;
+                }, 1000);
+              },
+              (error) => {
+                currentLocation.value = '定位失败';
+                locationLoading.value = false;
+              },
+              { timeout: 5000 }
+            );
+          } else {
+            currentLocation.value = '不支持定位';
+            locationLoading.value = false;
+          }
+        }
+
+        function selectCity(city) {
+          selectedCity.value = city;
+          showCityDropdown.value = false;
+          saveToHistory(city);
+        }
+
+        function clearHistory() {
+          searchHistory.value = [];
+          localStorage.removeItem('staySafe_searchHistory');
+        }
+
+        function toggleCityDropdown() {
+          showCityDropdown.value = !showCityDropdown.value;
+        }
+
+        return { searchKeyword, selectedCity, sortBy, cities, filteredHotels, suggestions, showSuggestions, goToDetail, selectSuggestion, handleSearch, blurSuggestions, getScoreClass, getScoreColor, showToast, showCityDropdown, currentLocation, locationLoading, hotCities, searchHistory, selectCity, clearHistory, toggleCityDropdown, loading, currentDataSource, useMockData };
+      },
+      template: `
+        <div>
+          <div class="page-header">
+            <h1 class="page-title">探索<span style="color: var(--color-primary);">安心住宿</span></h1>
+            <p class="page-subtitle">AI驱动的酒店安全透明平台，让每一位旅客都能看到真实的风险</p>
+          </div>
+
+          <div class="card">
+            <div class="search-bar">
+              <div style="position: relative; width: 140px;">
+                <div class="select" style="cursor: pointer; padding: 8px 16px; display: flex; align-items: center; justify-content: space-between;" @click="toggleCityDropdown">
+                  <span :style="{ color: selectedCity ? 'var(--color-text-primary)' : 'var(--color-text-muted)' }">{{ selectedCity || '选择城市' }}</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--color-text-muted);"><path d="M6 9l6 6 6-6"/></svg>
+                </div>
+                <div v-if="showCityDropdown" style="position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--color-border); border-top: none; border-radius: 0 0 var(--radius-md) var(--radius-md); box-shadow: var(--shadow-lg); z-index: 200; max-height: 400px; overflow-y: auto;">
+                  <div>
+                    <div style="padding: 8px 12px; font-size: var(--font-size-xs); color: var(--color-text-muted); font-weight: 600;">全部酒店</div>
+                    <div style="padding: 10px 16px; cursor: pointer; display: flex; align-items: center; gap: 8px;" @click="selectCity('')" :class="{ 'bg-primary/5': !selectedCity }">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--color-primary);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                      <span style="color: var(--color-text-primary); font-size: var(--font-size-sm);">{{ !selectedCity ? '✓ ' : '' }}全部城市酒店</span>
+                    </div>
+                  </div>
+                  <div v-if="searchHistory.length > 0">
+                    <div style="padding: 8px 12px; font-size: var(--font-size-xs); color: var(--color-text-muted); font-weight: 600; display: flex; justify-content: space-between; align-items: center;">
+                      <span>搜索历史</span>
+                      <span style="cursor: pointer; color: var(--color-text-muted);" @click="clearHistory">清空</span>
+                    </div>
+                    <div v-for="city in searchHistory" :key="city" style="padding: 10px 16px; cursor: pointer; display: flex; align-items: center; gap: 8px;" @click="selectCity(city)" :class="{ 'bg-primary/5': selectedCity === city }">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--color-text-muted);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                      <span style="color: var(--color-text-primary); font-size: var(--font-size-sm);">{{ city }}</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div style="padding: 8px 12px; font-size: var(--font-size-xs); color: var(--color-text-muted); font-weight: 600;">热门城市</div>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; padding: 4px 8px;">
+                      <div v-for="city in hotCities" :key="city" style="padding: 8px 12px; cursor: pointer; border-radius: var(--radius-sm); text-align: center;" @click="selectCity(city)" :class="selectedCity === city ? 'bg-primary text-white' : 'hover:bg-bg-tertiary'">
+                        <span style="font-size: var(--font-size-sm);">{{ city }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div style="flex: 1; position: relative;">
+                <input 
+                  v-model="searchKeyword" 
+                  class="input" 
+                  placeholder="搜索酒店名称或地址..." 
+                  @focus="showSuggestions = suggestions.length > 0; showCityDropdown = false;"
+                  @input="showSuggestions = suggestions.length > 0"
+                  @blur="blurSuggestions"
+                />
+                <div v-if="showSuggestions && suggestions.length > 0" style="position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--color-border); border-top: none; border-radius: 0 0 var(--radius-md) var(--radius-md); box-shadow: var(--shadow-lg); z-index: 100;">
+                  <div v-for="(item, index) in suggestions" :key="index" style="padding: 10px 16px; cursor: pointer; display: flex; align-items: center; gap: 8px;" @click="selectSuggestion(item)" @mouseenter="showSuggestions = true">
+                    <svg v-if="item.type === 'hotel'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    <span style="color: var(--color-text-primary); font-size: var(--font-size-sm);">{{ item.label }}</span>
+                  </div>
+                </div>
+              </div>
+              <button class="btn btn-primary" @click="handleSearch">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                搜索
+              </button>
+              <button class="btn" :class="useMockData ? 'btn-success' : 'btn-secondary'" @click="useMockData = !useMockData" style="margin-left: var(--spacing-xs);">
+                <svg v-if="useMockData" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                {{ useMockData ? '演示数据' : '真实数据' }}
+              </button>
+            </div>
+          </div>
+
+          <div class="ai-banner">
+            <div class="ai-banner-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 2a8 8 0 1 1-8 8 8 8 0 0 1 8-8z"/><path d="M12 6v6l4 2"/></svg>
+            </div>
+            <div class="ai-banner-content">
+              <div class="ai-banner-title">AI安全分析说明</div>
+              <div class="ai-banner-text">平台不直接判定酒店"安全/不安全"，而是通过聚合公开评论、新闻、用户上报和官方数据，生成多维风险画像。风险评分综合可信度等级（L1-L4），而非依据单条举报。请结合自身安全偏好做出决策。</div>
+            </div>
+          </div>
+
+          <div v-if="loading" class="card" style="text-align: center; padding: var(--spacing-lg);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--color-primary); animation: spin 1s linear infinite;"><circle cx="12" cy="12" r="10"/></svg>
+            <p style="margin-top: var(--spacing-sm); color: var(--color-text-muted);">正在获取酒店数据...</p>
+          </div>
+
+          <div v-if="!loading && filteredHotels.length === 0" class="card">
+            <div class="empty-state">
+              <div class="empty-state-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              </div>
+              <p>未找到匹配的酒店</p>
+            </div>
+          </div>
+
+          <div v-if="!loading" v-for="hotel in filteredHotels" :key="hotel.id" class="card card-interactive" @click="goToDetail(hotel.id)">
+            <div class="hotel-card">
+              <img :src="hotel.image" class="hotel-card-img" alt="hotel" />
+              <div class="hotel-card-content">
+                <div class="hotel-card-name">{{ hotel.name }}</div>
+                <div class="hotel-card-info">
+                  <span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    {{ hotel.location }}
+                  </span>
+                  <span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    {{ hotel.rating }}
+                  </span>
+                  <span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    {{ hotel.openDate }}开业 · {{ hotel.renovateDate }}装修
+                  </span>
+                </div>
+                <div style="margin-top: var(--spacing-sm); display: flex; align-items: center; justify-content: space-between;">
+                  <span style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">¥{{ hotel.price }}<span style="font-size: var(--font-size-sm); font-weight: var(--font-weight-normal);">/晚</span></span>
+                  <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+                    <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                      <span :style="{ fontSize: 'var(--font-size-xl)', fontWeight: 'var(--font-weight-bold)', color: hotel.safetyScore >= 88 ? '#5B9A6F' : hotel.safetyScore >= 78 ? '#4A6FA5' : hotel.safetyScore >= 68 ? '#E8A87C' : '#C96868' }">{{ hotel.safetyScore }}</span>
+                      <span style="font-size: var(--font-size-xs); color: var(--color-text-muted);">安全评分</span>
+                    </div>
+                    <div style="display: flex; gap: var(--spacing-xs);">
+                      <span v-for="tag in hotel.riskTags" :key="tag" class="tag" :class="hotel.safetyScore >= 88 ? 'tag-success' : hotel.safetyScore >= 78 ? 'tag-primary' : hotel.safetyScore >= 68 ? 'tag-warning' : 'tag-danger'">{{ tag }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top: var(--spacing-lg);">
+            <div style="display: flex; align-items: center; gap: var(--spacing-md); margin-bottom: var(--spacing-md);">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <h3 style="font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">数据来源公示</h3>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-md);">
+              <div style="padding: var(--spacing-md); background: var(--color-bg-secondary); border-radius: var(--radius-md);">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                  <span :style="{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: currentDataSource === 'amap' ? '#5B9A6F' : '#95A5A6' }"></span>
+                  <span style="font-size: var(--font-size-xs); color: var(--color-text-muted);">基础数据来源</span>
+                </div>
+                <span style="font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); color: var(--color-text-primary);">
+                  {{ currentDataSource === 'amap' ? '高德地图POI数据' : '演示数据' }}
+                </span>
+              </div>
+              
+              <div style="padding: var(--spacing-md); background: var(--color-bg-secondary); border-radius: var(--radius-md);">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                  <span style="width: '10px'; height: '10px'; border-radius: '50%'; background: '#E8A87C';"></span>
+                  <span style="font-size: var(--font-size-xs); color: var(--color-text-muted);">消防数据</span>
+                </div>
+                <span style="font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); color: var(--color-text-primary);">消防救援局公开检查结果</span>
+              </div>
+              
+              <div style="padding: var(--spacing-md); background: var(--color-bg-secondary); border-radius: var(--radius-md);">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                  <span style="width: '10px'; height: '10px'; border-radius: '50%'; background: '#4A6FA5';"></span>
+                  <span style="font-size: var(--font-size-xs); color: var(--color-text-muted);">卫生数据</span>
+                </div>
+                <span style="font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); color: var(--color-text-primary);">卫健委卫生监督评级公示</span>
+              </div>
+              
+              <div style="padding: var(--spacing-md); background: var(--color-bg-secondary); border-radius: var(--radius-md);">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                  <span style="width: '10px'; height: '10px'; border-radius: '50%'; background: '#C96868';"></span>
+                  <span style="font-size: var(--font-size-xs); color: var(--color-text-muted);">文旅数据</span>
+                </div>
+                <span style="font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); color: var(--color-text-primary);">文旅部星级评定备案</span>
+              </div>
+              
+              <div style="padding: var(--spacing-md); background: var(--color-bg-secondary); border-radius: var(--radius-md);">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                  <span style="width: '10px'; height: '10px'; border-radius: '50%'; background: '#9B7EBD';"></span>
+                  <span style="font-size: var(--font-size-xs); color: var(--color-text-muted);">用户上报</span>
+                </div>
+                <span style="font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); color: var(--color-text-primary);">真实用户安全事件反馈</span>
+              </div>
+              
+              <div style="padding: var(--spacing-md); background: var(--color-bg-secondary); border-radius: var(--radius-md);">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                  <span style="width: '10px'; height: '10px'; border-radius: '50%'; background: '#F59E0B';"></span>
+                  <span style="font-size: var(--font-size-xs); color: var(--color-text-muted);">新闻聚合</span>
+                </div>
+                <span style="font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); color: var(--color-text-primary);">公开新闻及社交媒体信息</span>
+              </div>
+            </div>
+            
+            <div style="margin-top: var(--spacing-md); padding-top: var(--spacing-md); border-top: 1px dashed var(--color-border);">
+              <div style="display: flex; align-items: center; gap: var(--spacing-md); flex-wrap: wrap;">
+                <span class="data-source-item">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                  酒店样本量：{{ filteredHotels.length }}家
+                </span>
+                <span style="font-size: var(--font-size-xs); color: var(--color-text-muted);">
+                  安全评分综合可信度等级（L1-L4），而非依据单条举报
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `
+    };
+
+    // ===== Hotel Detail Page =====
+    const HotelDetail = {
+      setup() {
+        const route = useRoute();
+        const router = useRouter();
+        const hotel = ref(null);
+        const showEventModal = ref(false);
+        const selectedEvent = ref(null);
+        const showTrend = ref(false);
+        const showEvents = ref(false);
+
+        onMounted(() => {
+          const id = route.params.id;
+          hotel.value = getHotelDetail(id);
+          if (!hotel.value) {
+            showToast('酒店信息未找到');
+            router.push('/');
+          }
+        });
+
+        function goBack() { router.push('/'); }
+        function openEvent(event) { selectedEvent.value = event; showEventModal.value = true; }
+        function closeEvent() { showEventModal.value = false; }
+
+        const maxTrend = computed(() => {
+          if (!hotel.value) return 100;
+          return Math.max(...hotel.value.trendData.map(d => d.value), 100);
+        });
+
+        return { hotel, showEventModal, selectedEvent, showTrend, showEvents, goBack, openEvent, closeEvent, maxTrend, getScoreClass, getScoreColor, getTrendIcon, getTrendColor, credibilityInfo };
+      },
+      template: `
+        <div v-if="hotel">
+          <div class="page-header">
+            <button class="btn btn-outline btn-sm" @click="goBack" style="margin-bottom: var(--spacing-md);">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+              返回列表
+            </button>
+            <h1 class="page-title">{{ hotel.name }}</h1>
+            <p class="page-subtitle">{{ hotel.location }} | 开业：{{ hotel.openDate }} | 装修：{{ hotel.renovateDate }}</p>
+          </div>
+
+          <div class="flex gap-md">
+            <div class="card text-center" style="flex: 1.2; border-width: 2px;">
+              <h3 class="card-title" style="margin-bottom: var(--spacing-md);">综合安全评分</h3>
+              <div class="score-circle" :style="{ borderColor: getScoreColor(hotel.safetyScore), width: '140px', height: '140px', borderWidth: '6px' }">
+                <div class="score-circle-value" :style="{ color: getScoreColor(hotel.safetyScore), fontSize: '56px' }">{{ hotel.safetyScore }}</div>
+                <div class="score-circle-label" style="font-size: var(--font-size-sm);">/ 100</div>
+              </div>
+              <div style="margin-top: var(--spacing-md);">
+                <span v-for="tag in hotel.riskTags" :key="tag" class="tag" :class="['推荐入住', '行业标杆', '门禁可靠', '适合常住', '综合较好', '性价比高'].includes(tag) ? 'tag-success' : ['隐私需关注'].includes(tag) ? 'tag-warning' : 'tag-danger'" style="font-size: var(--font-size-sm); padding: 4px 10px;">{{ tag }}</span>
+              </div>
+            </div>
+            <div class="card" style="flex: 0.8;">
+              <h3 class="card-title" style="margin-bottom: var(--spacing-sm); font-size: var(--font-size-sm);">基本信息</h3>
+              <div class="flex flex-col gap-xs" style="font-size: var(--font-size-xs);">
+                <div class="flex justify-between">
+                  <span class="text-muted">用户评分</span>
+                  <span style="font-weight: 600;">{{ hotel.rating }} / 5.0</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-muted">参考价格</span>
+                  <span style="font-weight: 600;">¥{{ hotel.price }} / 晚</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-muted">数据样本量</span>
+                  <span style="font-weight: 600;">{{ hotel.sampleSize }} 条</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-muted">数据来源</span>
+                  <span style="font-weight: 600;">{{ hotel.dataSources.length }} 类</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="section-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              四维安全评估
+            </div>
+            <div v-for="dim in hotel.riskDimensions" :key="dim.name" class="risk-dimension">
+              <div class="risk-dimension-header">
+                <span class="risk-dimension-name">{{ dim.name }}</span>
+                <span class="risk-dimension-score" :style="{ color: getScoreColor(dim.score) }">
+                  {{ dim.score }}
+                  <span style="font-size: var(--font-size-xs); color: var(--color-text-muted);">/ 100</span>
+                  <span :style="{ color: getTrendColor(dim.trend), marginLeft: '4px' }">{{ getTrendIcon(dim.trend) }}</span>
+                </span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" :class="getScoreClass(dim.score)" :style="{ width: dim.score + '%' }"></div>
+              </div>
+              <div class="risk-dimension-desc">{{ dim.description }}</div>
+              <div style="margin-top: var(--spacing-xs);">
+                <span class="credibility-badge" :class="credibilityInfo[dim.credibility].class">
+                  {{ dim.credibility }} · {{ credibilityInfo[dim.credibility].label }}
+                </span>
+                <span class="text-xs text-muted" style="margin-left: var(--spacing-sm);">{{ credibilityInfo[dim.credibility].desc }}</span>
+              </div>
+            </div>
+            <div class="data-source">
+              <span class="data-source-item" v-for="src in hotel.dataSources" :key="src">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m7 14 4-4 4 4 5-5"/></svg>
+                {{ src }}
+              </span>
+            </div>
+          </div>
+
+          <div class="ai-banner">
+            <div class="ai-banner-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 2a8 8 0 1 1-8 8 8 8 0 0 1 8-8z"/></svg>
+            </div>
+            <div class="ai-banner-content">
+              <div class="ai-banner-title">AI安全摘要</div>
+              <div class="ai-banner-text">{{ hotel.safetySummary }}</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="flex justify-between items-center mb-md" @click="showTrend = !showTrend" style="cursor: pointer;">
+              <div class="section-title" style="margin-bottom: 0;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m7 14 4-4 4 4 5-5"/></svg>
+                风险趋势（近6个月）
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :style="{ transform: showTrend ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+            <div v-if="showTrend">
+              <div style="display: flex; align-items: flex-end; justify-content: space-between; height: 160px; padding: var(--spacing-md) 0;">
+                <div v-for="data in hotel.trendData" :key="data.month" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: var(--spacing-xs);">
+                  <span style="font-size: var(--font-size-sm); font-weight: 700; color: getScoreColor(data.value);">{{ data.value }}</span>
+                  <div style="width: 70%; height: 120px; background: var(--color-border-light); border-radius: 4px; position: relative; overflow: hidden;">
+                    <div :style="{ 
+                      position: 'absolute', 
+                      bottom: 0, 
+                      left: 0, 
+                      right: 0, 
+                      height: (data.value / 100 * 100) + '%',
+                      background: getScoreColor(data.value),
+                      borderRadius: '4px',
+                      transition: 'height 0.6s ease'
+                    }"></div>
+                  </div>
+                  <span style="font-size: var(--font-size-xs); color: var(--color-text-muted);">{{ data.month }}</span>
+                </div>
+              </div>
+              <div class="text-xs text-muted mt-sm">AI检测到该酒店安全评分在近期呈现{{ hotel.trendData[hotel.trendData.length - 1].value > hotel.trendData[0].value ? '上升' : hotel.trendData[hotel.trendData.length - 1].value < hotel.trendData[0].value ? '下降' : '稳定' }}趋势</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="flex justify-between items-center mb-md" @click="showEvents = !showEvents" style="cursor: pointer;">
+              <div class="section-title" style="margin-bottom: 0;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                事件时间线
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :style="{ transform: showEvents ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+            <div v-if="showEvents">
+              <div v-for="event in hotel.events" :key="event.id" class="timeline-item" @click="openEvent(event)" style="cursor: pointer;">
+                <div class="timeline-dot" :class="'l' + event.credibility.substring(1).toLowerCase()"></div>
+                <div class="timeline-date">{{ event.date }}</div>
+                <div class="timeline-title">
+                  {{ event.type }}
+                  <span class="credibility-badge" :class="credibilityInfo[event.credibility].class" style="margin-left: var(--spacing-sm);">
+                    {{ event.credibility }} · {{ credibilityInfo[event.credibility].label }}
+                  </span>
+                </div>
+                <div class="timeline-desc">{{ event.description }}</div>
+                <div class="text-xs text-muted" style="margin-top: 4px;">证据数量：{{ event.evidenceCount }} | 点击查看详情</div>
+              </div>
+            </div>
+          </div>
+
+          
+
+          <div class="data-source">
+            <span class="data-source-item">AI分析结论仅供参考</span>
+          </div>
+
+          <div v-if="showEventModal" class="modal-overlay show" @click.self="closeEvent">
+            <div class="modal-content">
+              <div class="modal-header">
+                <div class="modal-title">事件详情</div>
+                <button class="modal-close" @click="closeEvent">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                </button>
+              </div>
+              <div v-if="selectedEvent">
+                <div class="flex items-center gap-sm mb-md">
+                  <span class="credibility-badge" :class="credibilityInfo[selectedEvent.credibility].class">
+                    {{ selectedEvent.credibility }} · {{ credibilityInfo[selectedEvent.credibility].label }}
+                  </span>
+                  <span class="text-xs text-muted">{{ selectedEvent.date }}</span>
+                </div>
+                <h3 style="margin-bottom: var(--spacing-sm);">{{ selectedEvent.type }}</h3>
+                <p class="text-sm" style="color: var(--color-text-secondary); line-height: 1.8;">{{ selectedEvent.description }}</p>
+                <div style="margin-top: var(--spacing-md); padding-top: var(--spacing-md); border-top: 1px solid var(--color-border);">
+                  <div class="text-xs text-muted">证据数量：{{ selectedEvent.evidenceCount }}</div>
+                  <div class="text-xs text-muted" style="margin-top: 4px;">可信度说明：{{ credibilityInfo[selectedEvent.credibility].desc }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `
+    };
+
+    // ===== Safety Assistant Page =====
+    const SafetyAssistant = {
+      setup() {
+        const checklistGroups = reactive([
+          {
+            category: '门锁安全',
+            icon: 'M18 21h3a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-3',
+            items: [
+              { id: 1, title: '检查房门反锁功能', desc: '进入房间后立即测试房门反锁，确保锁芯转动顺畅，反锁后外部无法打开', completed: false },
+              { id: 2, title: '检查猫眼', desc: '确认猫眼无遮挡物，从内部可清晰观察走廊，检查猫眼是否被反向安装', completed: false },
+              { id: 3, title: '检查防盗链/安全扣', desc: '确认防盗链完好无损，拉伸测试牢固度，确保链条无松动', completed: false },
+              { id: 4, title: '检查房卡', desc: '确认房卡仅能打开当前房间，测试房卡感应灵敏度，确认房卡物理状态完好', completed: false }
+            ]
+          },
+          {
+            category: '隐私安全',
+            icon: 'M12 15v2m-6 4h12a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2zm10-10V7a4 4 0 0 0-8 0v4h8z',
+            items: [
+              { id: 5, title: '排查隐藏摄像头 - 卫生间', desc: '重点检查烟雾报警器、换气扇、插座、镜框边缘等位置，使用手机摄像头扫描红外光源', completed: false },
+              { id: 6, title: '排查隐藏摄像头 - 卧室', desc: '检查电视、路由器、闹钟、装饰画、天花板等位置，关闭灯光后观察异常光点', completed: false },
+              { id: 7, title: '双面镜检查', desc: '用手指紧贴镜面，若指尖与镜像指尖之间有缝隙则为普通镜；若无缝隙需警惕单向透视镜', completed: false },
+              { id: 8, title: '检查WiFi安全', desc: '不连接不明WiFi，优先使用移动数据或个人热点，如必须连接则避免登录敏感账户', completed: false }
+            ]
+          },
+          {
+            category: '环境安全',
+            icon: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z',
+            items: [
+              { id: 9, title: '窗户窗帘检查', desc: '检查窗户锁扣是否完好，窗帘能否完全遮光，检查窗帘轨道、窗台等安全死角', completed: false },
+              { id: 10, title: '消防设施检查', desc: '确认房间内消防器材位置（灭火器、防毒面具），检查火警报警器是否正常', completed: false },
+              { id: 11, title: '确认紧急出口位置', desc: '查看楼层消防示意图，确认最近安全通道和消防楼梯位置', completed: false },
+              { id: 12, title: '保存紧急联系方式', desc: '存入酒店前台电话、当地报警电话（110）、急救电话（120）', completed: false }
+            ]
+          }
+        ]);
+
+        const checklist = computed(() => {
+          return checklistGroups.flatMap(group => group.items);
+        });
+
+        const completedCount = computed(() => checklist.value.filter(i => i.completed).length);
+        const progress = computed(() => Math.round(completedCount.value / checklist.value.length * 100));
+
+        function toggleItem(id) {
+          const item = checklist.value.find(i => i.id === id);
+          if (item) {
+            item.completed = !item.completed;
+            if (item.completed) showToast('已完成：' + item.title);
+          }
+        }
+
+        const emergencyContacts = [
+          { name: '报警电话', number: '110', desc: '遇到安全威胁时立即拨打' },
+          { name: '急救电话', number: '120', desc: '医疗紧急情况' },
+          { name: '消防电话', number: '119', desc: '火灾或被困情况' },
+          { name: '消费者投诉', number: '12315', desc: '酒店消费纠纷投诉' }
+        ];
+
+        const showReportForm = ref(false);
+        const formData = reactive({
+          hotel: '',
+          type: '',
+          description: '',
+          date: new Date().toISOString().substring(0, 10),
+          time: new Date().toTimeString().substring(0, 5),
+          files: [],
+          hasPoliceReport: false,
+          isAnonymous: true
+        });
+
+        const incidentTypes = ['偷拍疑似', '门锁异常', '工作人员擅入', '消防安全', '尾随骚扰', '其他安全事件'];
+
+        function openReportForm() {
+          showReportForm.value = true;
+          formData.date = new Date().toISOString().substring(0, 10);
+          formData.time = new Date().toTimeString().substring(0, 5);
+        }
+
+        function closeReportForm() {
+          showReportForm.value = false;
+        }
+
+        function handleFileUpload(event) {
+          const files = Array.from(event.target.files);
+          files.forEach(file => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              formData.files.push({
+                name: file.name,
+                type: file.type,
+                preview: e.target.result,
+                size: file.size
+              });
+            };
+            reader.readAsDataURL(file);
+          });
+        }
+
+        function removeFile(index) {
+          formData.files.splice(index, 1);
+        }
+
+        function submitReport() {
+          if (!formData.hotel || !formData.type) {
+            showToast('请填写酒店名称和事件类型');
+            return;
+          }
+          const incidents = JSON.parse(localStorage.getItem('staySafe_incidents') || '[]');
+          const newIncident = {
+            id: Date.now(),
+            hotel: formData.hotel,
+            type: formData.type,
+            date: formData.date + ' ' + formData.time,
+            status: '审核中',
+            credibility: formData.hasPoliceReport ? 'L4' : (formData.files.length > 0 ? 'L3' : 'L2'),
+            desc: formData.description || '暂无详细描述',
+            fileCount: formData.files.length
+          };
+          incidents.unshift(newIncident);
+          localStorage.setItem('staySafe_incidents', JSON.stringify(incidents));
+
+          updateHotelScore(formData.hotel, formData.type, newIncident.credibility);
+
+          showToast('事件已提交，AI正在自动分类中，酒店评分已更新');
+          closeReportForm();
+          formData.hotel = '';
+          formData.type = '';
+          formData.description = '';
+          formData.files = [];
+          formData.hasPoliceReport = false;
+        }
+
+        function updateHotelScore(hotelName, incidentType, credibility) {
+          let hotels = JSON.parse(localStorage.getItem('staySafe_hotels') || '[]');
+          let needSave = false;
+
+          const scoreImpact = {
+            'L4': -15,
+            'L3': -10,
+            'L2': -5,
+            'L1': -2
+          };
+
+          const typeToDimension = {
+            '偷拍疑似': '隐私保护',
+            '门锁异常': '门锁安全',
+            '工作人员擅入': '人员管理',
+            '消防安全': '环境安全',
+            '尾随骚扰': '人员管理',
+            '其他安全事件': '环境安全'
+          };
+
+          hotels.forEach(hotel => {
+            if (hotel.name.includes(hotelName) || hotelName.includes(hotel.name)) {
+              const impact = scoreImpact[credibility] || -5;
+              const dimension = typeToDimension[incidentType] || '环境安全';
+
+              if (hotel.riskDimensions) {
+                hotel.riskDimensions.forEach(dim => {
+                  if (dim.name === dimension) {
+                    dim.score = Math.max(0, dim.score + impact);
+                    dim.trend = 'down';
+                  }
+                });
+              }
+
+              hotel.safetyScore = Math.max(0, hotel.safetyScore + impact);
+
+              if (hotel.safetyScore < 60) {
+                if (!hotel.riskTags.includes('不推荐独行女性')) {
+                  hotel.riskTags.push('不推荐独行女性');
+                }
+              }
+              if (hotel.safetyScore < 70 && !hotel.riskTags.includes('隐私需关注')) {
+                hotel.riskTags.push('隐私需关注');
+              }
+              if (hotel.safetyScore < 75 && !hotel.riskTags.includes('设备老旧')) {
+                hotel.riskTags.push('设备老旧');
+              }
+
+              hotel.riskTags = [...new Set(hotel.riskTags)];
+
+              const positiveTags = ['推荐入住', '行业标杆', '门禁可靠', '适合常住', '综合较好', '性价比高'];
+              if (hotel.safetyScore < 75) {
+                hotel.riskTags = hotel.riskTags.filter(tag => !positiveTags.includes(tag));
+              }
+
+              needSave = true;
+            }
+          });
+
+          if (needSave) {
+            localStorage.setItem('staySafe_hotels', JSON.stringify(hotels));
+          }
+        }
+
+        return { checklist, checklistGroups, completedCount, progress, toggleItem, emergencyContacts, showReportForm, formData, incidentTypes, openReportForm, closeReportForm, handleFileUpload, removeFile, submitReport, credibilityInfo };
+      },
+      template: `
+        <div>
+          <div class="page-header">
+            <h1 class="page-title">入住安全助手</h1>
+            <p class="page-subtitle">入住后立即执行安全检查清单，保障住宿安全</p>
+          </div>
+
+          <div class="card">
+            <div class="flex justify-between items-center mb-md">
+              <h3 class="card-title">检查进度</h3>
+              <span class="text-sm" style="font-weight: 600; color: var(--color-primary);">{{ completedCount }} / {{ checklist.length }}</span>
+            </div>
+            <div class="progress-bar" style="height: 10px;">
+              <div class="progress-fill high" :style="{ width: progress + '%' }"></div>
+            </div>
+            <p class="text-sm text-muted mt-sm">{{ progress }}% 完成 · 建议逐项检查并确认</p>
+          </div>
+
+          <div class="section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            入住安全检查清单
+          </div>
+
+          <div v-for="group in checklistGroups" :key="group.category" class="card mb-md">
+            <div class="flex items-center gap-md mb-md" style="padding-bottom: var(--spacing-md); border-bottom: 1px solid var(--color-border);">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--color-primary);"><path :d="group.icon"/></svg>
+              <h4 style="font-size: var(--font-size-lg); font-weight: 600; color: var(--color-text-primary);">{{ group.category }}</h4>
+            </div>
+            <div v-for="item in group.items" :key="item.id" class="checklist-item" :class="{ completed: item.completed }" @click="toggleItem(item.id)">
+              <div class="checklist-checkbox">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div class="checklist-text">
+                <strong>{{ item.title }}</strong>
+                {{ item.desc }}
+              </div>
+            </div>
+          </div>
+
+          <div class="section-title mt-lg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-6 0v4"/><rect x="2" y="9" width="20" height="12" rx="2"/></svg>
+            紧急联系方式
+          </div>
+
+          <div class="split-2">
+            <div v-for="contact in emergencyContacts" :key="contact.number" class="card">
+              <div class="flex justify-between items-center">
+                <div>
+                  <div class="card-title">{{ contact.name }}</div>
+                  <div class="text-sm text-muted mt-sm">{{ contact.desc }}</div>
+                </div>
+                <div style="font-size: var(--font-size-xl); font-weight: bold; color: var(--color-primary);">{{ contact.number }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-title mt-lg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+            安全提示
+          </div>
+
+          <div class="ai-banner">
+            <div class="ai-banner-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 2a8 8 0 1 1-8 8 8 8 0 0 1 8-8z"/></svg>
+            </div>
+            <div class="ai-banner-content">
+              <div class="ai-banner-title">AI安全建议</div>
+              <div class="ai-banner-text">
+                建议在入住后30分钟内完成全部安全检查。如发现任何安全隐患，请立即匿名上报，帮助下一位入住者提前了解风险。
+              </div>
+            </div>
+          </div>
+
+          <div class="card incident-report-card" style="background: linear-gradient(135deg, var(--color-danger) 0%, var(--color-warning) 100%); padding: var(--spacing-lg); margin-top: var(--spacing-lg);">
+            <div class="flex items-center gap-md">
+              <div style="width: 56px; height: 56px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 9v4M12 17h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
+              </div>
+              <div style="flex: 1;">
+                <h4 style="font-size: var(--font-size-lg); font-weight: 600; color: white; margin-bottom: 4px;">发现安全问题？</h4>
+                <p style="font-size: var(--font-size-sm); color: rgba(255,255,255,0.9);">立即匿名上报，保护自己和他人</p>
+              </div>
+              <button class="btn btn-white" @click="openReportForm">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                立即上报
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="showReportForm" class="modal-overlay show" @click.self="closeReportForm">
+          <div class="modal-content">
+            <div class="modal-header">
+              <div class="modal-title">上报安全事件</div>
+              <button class="modal-close" @click="closeReportForm">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">酒店名称</label>
+              <input v-model="formData.hotel" class="input" placeholder="自动定位酒店名称，也可手动输入" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">事件类型</label>
+              <select v-model="formData.type" class="select">
+                <option value="">请选择事件类型</option>
+                <option v-for="t in incidentTypes" :key="t" :value="t">{{ t }}</option>
+              </select>
+            </div>
+
+            <div class="split-2">
+              <div class="form-group">
+                <label class="form-label">发生日期</label>
+                <input v-model="formData.date" type="date" class="input" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">发生时间</label>
+                <input v-model="formData.time" type="time" class="input" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">事件描述 <span style="color: var(--color-text-muted); font-weight: normal;">（可选）</span></label>
+              <textarea v-model="formData.description" class="textarea" placeholder="详细描述事件发生的时间、地点和经过..." rows="3"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">证据上传</label>
+              <div class="file-upload" @click="$refs.fileInput.click()">
+                <div class="file-upload-icon">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                </div>
+                <p class="text-sm">点击上传图片/视频证据</p>
+                <p class="text-xs text-muted">支持 JPG、PNG、MP4 等格式，可多选</p>
+              </div>
+              <input type="file" ref="fileInput" multiple accept="image/*,video/*" class="hidden" @change="handleFileUpload" />
+            </div>
+
+            <div v-if="formData.files.length > 0" class="form-group">
+              <div class="flex flex-wrap gap-sm">
+                <div v-for="(file, index) in formData.files" :key="index" class="file-preview" @click="removeFile(index)">
+                  <img v-if="file.type.startsWith('image')" :src="file.preview" :alt="file.name" />
+                  <div v-else class="file-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  </div>
+                  <span class="file-name">{{ file.name }}</span>
+                  <div class="remove-icon">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="toggle" :class="{ active: formData.hasPoliceReport }" @click="formData.hasPoliceReport = !formData.hasPoliceReport">
+                <div class="toggle-switch"></div>
+                <span class="text-sm">已报警，上传报警回执（将提升至L4可信度）</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="toggle active" @click="formData.isAnonymous = !formData.isAnonymous" style="pointer-events: none;">
+                <div class="toggle-switch"></div>
+                <span class="text-sm">匿名上报（保护隐私）</span>
+              </div>
+            </div>
+
+            <button class="btn btn-primary btn-block btn-lg" @click="submitReport">提交上报</button>
+          </div>
+        </div>
+      `
+    };
+
+    // ===== Rights Assistant Page =====
+    const RightsAssistant = {
+      setup() {
+        const activeStep = ref(0);
+        const steps = [
+          {
+            title: '保护现场与固定证据',
+            desc: '发现问题后第一时间固定证据，避免证据灭失',
+            items: [
+              '不要触碰或移动可疑设备，立即用手机拍照/录像记录',
+              '拍摄全景照片（房间整体）和特写照片（设备细节）',
+              '记录发现时间、房间号、设备位置等关键信息',
+              '如有人身安全问题，优先确保自身安全再取证'
+            ]
+          },
+          {
+            title: '立即报警',
+            desc: '根据事件性质选择报警方式',
+            items: [
+              '拨打110报警电话，说明发现时间和地点',
+              '告知警方可疑设备的位置和外观',
+              '要求警方出警并出具受案回执',
+              '在警方到达前不要让酒店工作人员进入房间'
+            ]
+          },
+          {
+            title: '向酒店方交涉',
+            desc: '在警方处理同时，向酒店管理层提出正式投诉',
+            items: [
+              '要求酒店值班经理到场，书面记录投诉内容',
+              '要求酒店提供监控录像和房间入住记录',
+              '保留酒店方的书面回复或录音',
+              '不要接受酒店方私了，等待警方调查结果'
+            ]
+          },
+          {
+            title: '保留消费凭证',
+            desc: '收集与住宿相关的所有消费凭证',
+            items: [
+              '保留订单截图、支付凭证、发票',
+              '保留酒店入住登记信息',
+              '截图保存酒店在平台的宣传信息',
+              '如有医疗费用，保留医疗票据'
+            ]
+          },
+          {
+            title: '向监管部门投诉',
+            desc: '根据事件性质向不同部门投诉',
+            items: [
+              '拨打12315消费者投诉热线',
+              '向当地文旅局投诉酒店安全管理问题',
+              '向公安机关网安部门举报偷拍设备',
+              '可通过12345市民热线转办相关投诉'
+            ]
+          },
+          {
+            title: '法律维权与诉讼',
+            desc: '必要时通过法律途径维护权益',
+            items: [
+              '咨询专业律师，评估是否提起民事诉讼',
+              '可向法律援助中心申请免费法律咨询（12348）',
+              '准备起诉材料：证据、报警回执、消费凭证、投诉记录',
+              '可主张的权益：退还住宿费、精神损害赔偿、误工费等'
+            ]
+          }
+        ];
+
+        const legalResources = [
+          { name: '12348法律援助热线', desc: '免费法律咨询', number: '12348' },
+          { name: '12315消费者投诉', desc: '消费纠纷投诉', number: '12315' },
+          { name: '12345市民服务热线', desc: '政务投诉转办', number: '12345' },
+          { name: '全国法律服务网', desc: '在线法律咨询', number: 'online' }
+        ];
+
+        const showLegalGuide = ref(false);
+        const legalGuideData = reactive({
+          hotel: '',
+          incidentType: '',
+          incidentDate: '',
+          description: ''
+        });
+        const generatedGuide = ref(null);
+
+        const incidentTypes = ['偷拍疑似', '门锁异常', '工作人员擅入', '消防安全', '尾随骚扰', '其他安全事件'];
+
+        const legalArticles = {
+          '偷拍疑似': [
+            { law: '《中华人民共和国个人信息保护法》', article: '第13条、第44条', content: '个人信息受法律保护，任何组织、个人不得非法收集、使用、加工、传输个人信息' },
+            { law: '《中华人民共和国治安管理处罚法》', article: '第42条', content: '偷窥、偷拍他人隐私的，处五日以下拘留或者五百元以下罚款' },
+            { law: '《中华人民共和国刑法》', article: '第283条、第284条', content: '非法生产、销售、使用窃听、窃照专用器材，情节严重的构成犯罪' }
+          ],
+          '门锁异常': [
+            { law: '《中华人民共和国消费者权益保护法》', article: '第18条', content: '经营者应当保证其提供的商品或者服务符合保障人身、财产安全的要求' },
+            { law: '《旅馆业治安管理办法》', article: '第15条', content: '旅馆应当设置旅客财物保管箱、柜或者保管室、保险柜，并指定专人负责保管工作' }
+          ],
+          '工作人员擅入': [
+            { law: '《中华人民共和国个人信息保护法》', article: '第13条', content: '处理个人信息应当取得个人同意，除非法律另有规定' },
+            { law: '《中华人民共和国治安管理处罚法》', article: '第40条', content: '非法侵入他人住宅的，处十日以上十五日以下拘留' }
+          ],
+          '消防安全': [
+            { law: '《中华人民共和国消防法》', article: '第16条', content: '机关、团体、企业、事业等单位应当履行消防安全职责' },
+            { law: '《旅馆业治安管理办法》', article: '第3条', content: '开办旅馆，其房屋建筑、消防设备、出入口和通道等，必须符合《中华人民共和国消防法》等有关规定' }
+          ],
+          '尾随骚扰': [
+            { law: '《中华人民共和国治安管理处罚法》', article: '第42条', content: '写恐吓信或者以其他方法威胁他人人身安全的，处五日以下拘留' },
+            { law: '《中华人民共和国妇女权益保障法》', article: '第29条', content: '禁止以恋爱、交友为由或者在终止恋爱关系、离婚后，纠缠、骚扰妇女' }
+          ],
+          '其他安全事件': [
+            { law: '《中华人民共和国消费者权益保护法》', article: '第18条', content: '经营者应当保证其提供的商品或者服务符合保障人身、财产安全的要求' },
+            { law: '《中华人民共和国民法典》', article: '第1198条', content: '宾馆、商场、银行、车站、机场、体育场馆、娱乐场所等经营场所、公共场所的经营者、管理者或者群众性活动的组织者，未尽到安全保障义务，造成他人损害的，应当承担侵权责任' }
+          ]
+        };
+
+        function generateLegalGuide() {
+          if (!legalGuideData.incidentType) {
+            showToast('请选择事件类型');
+            return;
+          }
+          const articles = legalArticles[legalGuideData.incidentType] || legalArticles['其他安全事件'];
+          const timeline = [];
+          if (legalGuideData.incidentDate) timeline.push({ time: legalGuideData.incidentDate, event: '事件发生' });
+          timeline.push({ time: new Date().toISOString().substring(0, 10), event: '已报警/投诉' });
+          timeline.push({ time: '', event: '等待警方调查结果' });
+
+          generatedGuide.value = {
+            summary: `针对您在【${legalGuideData.hotel || '未知酒店'}】遇到的【${legalGuideData.incidentType}】事件，根据相关法律法规，您可以采取以下法律行动：`,
+            timeline,
+            articles,
+            recommendations: [
+              '立即拨打12348法律援助热线咨询专业律师',
+              '保留所有证据（照片、视频、报警回执、消费凭证）',
+              '向当地文旅局和市场监管部门投诉',
+              '如涉及隐私侵犯，可依据《个人信息保护法》追究民事责任',
+              '必要时可提起民事诉讼，主张精神损害赔偿'
+            ],
+            report: `【事件时间线】\n${timeline.map(t => `${t.time || '待补充'}: ${t.event}`).join('\n')}\n\n【事件描述】\n${legalGuideData.description || '暂无详细描述'}\n\n【法律依据】\n${articles.map(a => `${a.law} ${a.article}: ${a.content}`).join('\n')}\n\n【证据清单】\n1. 现场照片/视频\n2. 报警回执\n3. 消费凭证\n4. 酒店沟通记录`
+          };
+        }
+
+        function copyReport() {
+          if (generatedGuide.value) {
+            navigator.clipboard.writeText(generatedGuide.value.report);
+            showToast('证据报告已复制到剪贴板');
+          }
+        }
+
+        function nextStep() {
+          if (activeStep.value < steps.length - 1) {
+            activeStep.value++;
+            showToast('进入下一步：' + steps[activeStep.value].title);
+          }
+        }
+        function prevStep() {
+          if (activeStep.value > 0) activeStep.value--;
+        }
+        function selectStep(index) { activeStep.value = index; }
+
+        return { activeStep, steps, legalResources, nextStep, prevStep, selectStep, showLegalGuide, legalGuideData, incidentTypes, generatedGuide, generateLegalGuide, copyReport };
+      },
+      template: `
+        <div>
+          <div class="page-header">
+            <h1 class="page-title">AI维权助手</h1>
+            <p class="page-subtitle">遇到安全事件后的取证、报警、投诉与法律维权全流程指导</p>
+          </div>
+
+          <div class="ai-banner">
+            <div class="ai-banner-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 2a8 8 0 1 1-8 8 8 8 0 0 1 8-8z"/></svg>
+            </div>
+            <div class="ai-banner-content">
+              <div class="ai-banner-title">AI维权指导说明</div>
+              <div class="ai-banner-text">本指导基于常见法律程序和消费者权益保护法规生成。遇到紧急安全问题请优先拨打110报警，确保人身安全后再按步骤进行维权。每一步都有详细的操作指引，请按顺序执行。如需要法律援助，可拨打12348法律援助热线。涉及个人隐私侵犯的，可依据《个人信息保护法》追究责任。</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="flex justify-between items-center mb-md">
+              <h3 class="card-title">维权进度</h3>
+              <span class="text-sm" style="font-weight: 600; color: var(--color-primary);">第 {{ activeStep + 1 }} / {{ steps.length }} 步</span>
+            </div>
+            <div class="progress-bar" style="height: 10px;">
+              <div class="progress-fill high" :style="{ width: ((activeStep + 1) / steps.length * 100) + '%' }"></div>
+            </div>
+            <div class="flex gap-sm mt-md" style="overflow-x: auto;">
+              <button v-for="(step, index) in steps" :key="index"
+                class="btn btn-sm"
+                :class="index === activeStep ? 'btn-primary' : index < activeStep ? 'btn-success' : 'btn-outline'"
+                @click="selectStep(index)"
+                style="white-space: nowrap;">
+                {{ index + 1 }}. {{ step.title }}
+              </button>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <div class="step-number">{{ activeStep + 1 }}</div>
+            <h3 class="step-title">{{ steps[activeStep].title }}</h3>
+            <p class="step-desc">{{ steps[activeStep].desc }}</p>
+            <ul>
+              <li v-for="(item, index) in steps[activeStep].items" :key="index">{{ item }}</li>
+            </ul>
+          </div>
+
+          <div class="flex gap-sm mb-lg">
+            <button class="btn btn-outline" @click="prevStep" :disabled="activeStep === 0" :style="{ opacity: activeStep === 0 ? 0.5 : 1, pointerEvents: activeStep === 0 ? 'none' : 'auto' }">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+              上一步
+            </button>
+            <button v-if="activeStep < steps.length - 1" class="btn btn-primary" @click="nextStep">
+              下一步
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 5 7 7-7 7"/><path d="M19 12H5"/></svg>
+            </button>
+            <button v-else class="btn btn-success" @click="showToast('维权流程已完成，建议保存相关凭证')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              完成维权流程
+            </button>
+          </div>
+
+          <div class="section-title mt-lg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            法律援助资源
+          </div>
+
+          <div class="split-2">
+            <div v-for="resource in legalResources" :key="resource.number" class="card">
+              <div class="flex justify-between items-center">
+                <div>
+                  <div class="card-title">{{ resource.name }}</div>
+                  <div class="text-sm text-muted mt-sm">{{ resource.desc }}</div>
+                </div>
+                <div style="font-size: var(--font-size-lg); font-weight: bold; color: var(--color-primary);">{{ resource.number }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ai-banner">
+            <div class="ai-banner-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 2a8 8 0 1 1-8 8 8 8 0 0 1 8-8z"/></svg>
+            </div>
+            <div class="ai-banner-content">
+              <div class="ai-banner-title">AI法律引导</div>
+              <div class="ai-banner-text">如需要法律援助，可拨打12348法律援助热线。涉及个人隐私侵犯的，可依据《个人信息保护法》追究责任。StaySafe将为您生成完整的事件时间线和证据报告。</div>
+            </div>
+          </div>
+
+          <div class="section-title mt-lg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+            AI法律引导生成器
+          </div>
+
+          <div class="card" style="border: 2px solid #9b59b6; background: linear-gradient(135deg, rgba(155,89,182,0.05) 0%, rgba(155,89,182,0.1) 100%);">
+            <div class="flex justify-between items-center mb-md">
+              <h3 class="card-title" style="color: #9b59b6;">生成法律引导报告</h3>
+              <button class="btn btn-sm" style="background: #9b59b6; color: white;" @click="showLegalGuide = !showLegalGuide">
+                {{ showLegalGuide ? '收起' : '展开' }}
+              </button>
+            </div>
+
+            <div v-if="showLegalGuide">
+              <div class="form-group">
+                <label class="form-label">酒店名称</label>
+                <input v-model="legalGuideData.hotel" class="input" placeholder="输入酒店名称" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">事件类型</label>
+                <select v-model="legalGuideData.incidentType" class="select">
+                  <option value="">请选择事件类型</option>
+                  <option v-for="t in incidentTypes" :key="t" :value="t">{{ t }}</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">事件日期</label>
+                <input v-model="legalGuideData.incidentDate" type="date" class="input" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">事件描述 <span style="color: var(--color-text-muted); font-weight: normal;">（可选）</span></label>
+                <textarea v-model="legalGuideData.description" class="textarea" placeholder="简要描述事件经过..." rows="3"></textarea>
+              </div>
+
+              <button class="btn btn-block btn-lg" style="background: #9b59b6; color: white;" @click="generateLegalGuide">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+                生成法律引导报告
+              </button>
+            </div>
+          </div>
+
+          <div v-if="generatedGuide" class="card" style="background: linear-gradient(135deg, rgba(155,89,182,0.05) 0%, rgba(155,89,182,0.15) 100%);">
+            <div class="flex justify-between items-center mb-md">
+              <h3 class="card-title" style="color: #9b59b6;">生成的法律引导报告</h3>
+              <button class="btn btn-sm btn-outline" @click="copyReport">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                复制报告
+              </button>
+            </div>
+
+            <div class="text-sm mb-md" style="color: var(--color-text-primary);">
+              {{ generatedGuide.summary }}
+            </div>
+
+            <div class="mb-md">
+              <div class="text-xs text-muted mb-sm">事件时间线</div>
+              <div class="card" style="padding: var(--spacing-md);">
+                <div v-for="(item, index) in generatedGuide.timeline" :key="index" class="flex items-center gap-sm mb-sm last:mb-0">
+                  <div class="timeline-dot l3" style="margin-top: 2px;"></div>
+                  <div>
+                    <div class="text-sm" style="font-weight: 500;">{{ item.event }}</div>
+                    <div class="text-xs text-muted">{{ item.time || '时间待定' }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-md">
+              <div class="text-xs text-muted mb-sm">适用法律条款</div>
+              <div v-for="article in generatedGuide.articles" :key="article.law" class="card mb-sm" style="padding: var(--spacing-md); border-left: 3px solid #9b59b6;">
+                <div style="font-size: var(--font-size-sm); font-weight: 600; color: #9b59b6;">{{ article.law }} {{ article.article }}</div>
+                <div class="text-xs text-muted mt-sm">{{ article.content }}</div>
+              </div>
+            </div>
+
+            <div>
+              <div class="text-xs text-muted mb-sm">维权建议</div>
+              <ul class="text-sm">
+                <li v-for="(rec, index) in generatedGuide.recommendations" :key="index">{{ rec }}</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="data-source">
+            <span class="data-source-item">AI指导内容仅供参考，具体法律问题请咨询专业律师</span>
+          </div>
+        </div>
+      `
+    };
+
+    // ===== Router =====
+    const routes = [
+      { path: '/', component: HomePage },
+      { path: '/hotel/:id', component: HotelDetail },
+      { path: '/safety-assistant', component: SafetyAssistant },
+
+      { path: '/rights-assistant', component: RightsAssistant }
+    ];
+
+    const router = createRouter({
+      history: createWebHashHistory(),
+      routes
+    });
+
+    // ===== App =====
+    const app = createApp({});
+
+    if (!localStorage.getItem('staySafe_hotels')) {
+      localStorage.setItem('staySafe_hotels', JSON.stringify(hotelDetails));
+    }
+
+    app.use(router);
+    app.config.globalProperties.$toast = showToast;
+    app.config.globalProperties.getScoreClass = getScoreClass;
+    app.config.globalProperties.getScoreColor = getScoreColor;
+    app.config.globalProperties.credibilityInfo = credibilityInfo;
+    app.config.globalProperties.toast = toast;
+
+    // Mount global data
+    const { provide } = app.config.globalProperties;
+    app.provide('toast', toast);
+    app.provide('showToast', showToast);
+
+    app.mount('#app');
+  </script>
+</body>
+
+</html>
