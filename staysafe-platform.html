@@ -1448,6 +1448,62 @@
       .text-lg {
         font-size: 16px;
       }
+
+      /* Hotel card bottom layout */
+      .hotel-card-bottom {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 8px !important;
+      }
+
+      .hotel-card-price {
+        font-size: 18px !important;
+      }
+
+      .hotel-card-right {
+        width: 100% !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+      }
+
+      .hotel-card-score {
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 4px !important;
+      }
+
+      .hotel-card-tags {
+        flex-wrap: wrap !important;
+      }
+
+      /* Detail page split layout */
+      .detail-header-row {
+        flex-direction: column !important;
+      }
+
+      .detail-score-card {
+        flex: 1 !important;
+        margin-bottom: 12px !important;
+      }
+
+      .detail-info-card {
+        flex: 1 !important;
+      }
+
+      /* Incident report card */
+      .incident-report-card {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+      }
+
+      /* Legal guide card */
+      .legal-guide-card-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 8px !important;
+      }
     }
 
     @media (max-width: 480px) {
@@ -2255,14 +2311,14 @@
                     {{ hotel.openDate }}开业 · {{ hotel.renovateDate }}装修
                   </span>
                 </div>
-                <div style="margin-top: var(--spacing-sm); display: flex; align-items: center; justify-content: space-between;">
-                  <span style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">¥{{ hotel.price }}<span style="font-size: var(--font-size-sm); font-weight: var(--font-weight-normal);">/晚</span></span>
-                  <div style="display: flex; align-items: center; gap: var(--spacing-md);">
-                    <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                <div class="hotel-card-bottom" style="margin-top: var(--spacing-sm); display: flex; align-items: center; justify-content: space-between;">
+                  <span class="hotel-card-price" style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">¥{{ hotel.price }}<span style="font-size: var(--font-size-sm); font-weight: var(--font-weight-normal);">/晚</span></span>
+                  <div class="hotel-card-right" style="display: flex; align-items: center; gap: var(--spacing-md);">
+                    <div class="hotel-card-score" style="display: flex; flex-direction: column; align-items: flex-end;">
                       <span :style="{ fontSize: 'var(--font-size-xl)', fontWeight: 'var(--font-weight-bold)', color: hotel.safetyScore >= 88 ? '#5B9A6F' : hotel.safetyScore >= 78 ? '#4A6FA5' : hotel.safetyScore >= 68 ? '#E8A87C' : '#C96868' }">{{ hotel.safetyScore }}</span>
                       <span style="font-size: var(--font-size-xs); color: var(--color-text-muted);">安全评分</span>
                     </div>
-                    <div style="display: flex; gap: var(--spacing-xs);">
+                    <div class="hotel-card-tags" style="display: flex; gap: var(--spacing-xs);">
                       <span v-for="tag in hotel.riskTags" :key="tag" class="tag" :class="hotel.safetyScore >= 88 ? 'tag-success' : hotel.safetyScore >= 78 ? 'tag-primary' : hotel.safetyScore >= 68 ? 'tag-warning' : 'tag-danger'">{{ tag }}</span>
                     </div>
                   </div>
@@ -2387,8 +2443,8 @@
             <p class="page-subtitle">{{ hotel.location }} | 开业：{{ hotel.openDate }} | 装修：{{ hotel.renovateDate }}</p>
           </div>
 
-          <div class="flex gap-md">
-            <div class="card text-center" style="flex: 1.2; border-width: 2px;">
+          <div class="detail-header-row" style="display: flex; gap: var(--spacing-md);">
+            <div class="detail-score-card card text-center" style="flex: 1.2; border-width: 2px;">
               <h3 class="card-title" style="margin-bottom: var(--spacing-md);">综合安全评分</h3>
               <div class="score-circle" :style="{ borderColor: getScoreColor(hotel.safetyScore), width: '140px', height: '140px', borderWidth: '6px' }">
                 <div class="score-circle-value" :style="{ color: getScoreColor(hotel.safetyScore), fontSize: '56px' }">{{ hotel.safetyScore }}</div>
@@ -2398,7 +2454,7 @@
                 <span v-for="tag in hotel.riskTags" :key="tag" class="tag" :class="['推荐入住', '行业标杆', '门禁可靠', '适合常住', '综合较好', '性价比高'].includes(tag) ? 'tag-success' : ['隐私需关注'].includes(tag) ? 'tag-warning' : 'tag-danger'" style="font-size: var(--font-size-sm); padding: 4px 10px;">{{ tag }}</span>
               </div>
             </div>
-            <div class="card" style="flex: 0.8;">
+            <div class="detail-info-card card" style="flex: 0.8;">
               <h3 class="card-title" style="margin-bottom: var(--spacing-sm); font-size: var(--font-size-sm);">基本信息</h3>
               <div class="flex flex-col gap-xs" style="font-size: var(--font-size-xs);">
                 <div class="flex justify-between">
@@ -2825,15 +2881,15 @@
           </div>
 
           <div class="card incident-report-card" style="background: linear-gradient(135deg, var(--color-danger) 0%, var(--color-warning) 100%); padding: var(--spacing-lg); margin-top: var(--spacing-lg);">
-            <div class="flex items-center gap-md">
-              <div style="width: 56px; height: 56px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+            <div class="flex items-center gap-md" style="display: flex; align-items: center; gap: var(--spacing-md);">
+              <div style="width: 56px; height: 56px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 9v4M12 17h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
               </div>
               <div style="flex: 1;">
                 <h4 style="font-size: var(--font-size-lg); font-weight: 600; color: white; margin-bottom: 4px;">发现安全问题？</h4>
                 <p style="font-size: var(--font-size-sm); color: rgba(255,255,255,0.9);">立即匿名上报，保护自己和他人</p>
               </div>
-              <button class="btn btn-white" @click="openReportForm">
+              <button class="btn btn-white" style="flex-shrink: 0;" @click="openReportForm">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
                 立即上报
               </button>
@@ -3178,9 +3234,9 @@
           </div>
 
           <div class="card" style="border: 2px solid #9b59b6; background: linear-gradient(135deg, rgba(155,89,182,0.05) 0%, rgba(155,89,182,0.1) 100%);">
-            <div class="flex justify-between items-center mb-md">
+            <div class="legal-guide-card-header flex justify-between items-center mb-md" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-md);">
               <h3 class="card-title" style="color: #9b59b6;">生成法律引导报告</h3>
-              <button class="btn btn-sm" style="background: #9b59b6; color: white;" @click="showLegalGuide = !showLegalGuide">
+              <button class="btn btn-sm" style="background: #9b59b6; color: white; flex-shrink: 0;" @click="showLegalGuide = !showLegalGuide">
                 {{ showLegalGuide ? '收起' : '展开' }}
               </button>
             </div>
