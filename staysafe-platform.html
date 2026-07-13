@@ -10,6 +10,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script type="text/javascript">
+    window._AMapSecurityConfig = { securityJsCode: '' };
+  </script>
+  <script
+    src="https://webapi.amap.com/maps?v=2.0&key=07c707965ecf73aee6a5ba0edc5340aa&plugin=AMap.PlaceSearch"></script>
   <style>
     :root {
       --color-primary: #4A6FA5;
@@ -1596,33 +1601,113 @@
       return { score, tags };
     }
 
+    const USE_JS_API_FALLBACK = true;
+    function useLocalAmapProxy() {
+      const host = location.hostname || '';
+      const protocol = location.protocol || '';
+      if (protocol === 'file:') return false;
+      if (host === 'localhost' || host === '127.0.0.1' || host === '::1') return true;
+      const privateIpRe = /^(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.)/;
+      if (privateIpRe.test(host)) return true;
+      if (location.port === '3000' || location.port === '5173' || location.port === '8080') return true;
+      return false;
+    }
+
+    function amapJsApiReady() {
+      return !!(USE_JS_API_FALLBACK && window.AMap && typeof window.AMap.PlaceSearch === 'function');
+    }
+
+    function searchAmapPoisByJsApi(city, keywords) {
+      return new Promise((resolve, reject) => {
+        if (!amapJsApiReady()) {
+          reject(new Error('AMap JS API PlaceSearch not loaded'));
+          return;
+        }
+        try {
+          const placeSearch = new window.AMap.PlaceSearch({
+            city: city || '全国',
+            pageSize: 20,
+            pageIndex: 1,
+            extensions: 'all',
+            citylimit: true
+          });
+          placeSearch.search(keywords || (city + '酒店'), (status, result) => {
+            if (status === 'complete' && result && result.poiList && Array.isArray(result.poiList.pois)) {
+              resolve({ status: '1', pois: result.poiList.pois, info: 'OK', fromJsApi: true });
+            } else if (status === 'no_data') {
+              resolve({ status: '1', pois: [], info: 'no_data', fromJsApi: true });
+            } else {
+              reject(new Error('AMap JS API PlaceSearch error: ' + (result && result.info ? result.info : status)));
+            }
+          });
+        } catch (err) {
+          reject(err);
+        }
+      });
+    }
+
+    function getAmapPoiDetailByJsApi(poiId) {
+      return new Promise((resolve, reject) => {
+        if (!amapJsApiReady()) {
+          reject(new Error('AMap JS API PlaceSearch not loaded'));
+          return;
+        }
+        try {
+          const placeSearch = new window.AMap.PlaceSearch({ extensions: 'all' });
+          placeSearch.getDetails(poiId, (status, result) => {
+            if (status === 'complete' && result && result.poiInfo) {
+              resolve({ status: '1', pois: [result.poiInfo], info: 'OK', fromJsApi: true });
+            } else if (status === 'no_data') {
+              resolve({ status: '1', pois: [], info: 'no_data', fromJsApi: true });
+            } else {
+              reject(new Error('AMap JS API getDetails error: ' + (result && result.info ? result.info : status)));
+            }
+          });
+        } catch (err) {
+          reject(err);
+        }
+      });
+    }
+
     async function fetchHotelsFromAMap(city) {
       try {
-        console.log('Fetching hotels for city:', city);
-        const url = `/api/amap/v3/place/text?keywords=${encodeURIComponent(city + '酒店')}&city=${encodeURIComponent(city)}&output=json&offset=20&extensions=all`;
-        console.log('Proxy API URL:', url);
+        console.log('Fetching hotels for city:', city, '| useLocalProxy:', useLocalAmapProxy(), '| jsApiReady:', amapJsApiReady());
+        let data = null;
 
-        const response = await fetch(url);
-        console.log('Response status:', response.status);
-
-        if (!response.ok) {
-          throw new Error('Network response not ok: ' + response.status);
+        if (useLocalAmapProxy()) {
+          const url = `/api/amap/v3/place/text?keywords=${encodeURIComponent(city + '酒店')}&city=${encodeURIComponent(city)}&output=json&offset=20&extensions=all`;
+          console.log('Local proxy URL:', url);
+          const response = await fetch(url);
+          console.log('Proxy response status:', response.status);
+          if (!response.ok) throw new Error('Proxy network response not ok: ' + response.status);
+          data = await response.json();
+          console.log('AMap proxy response:', data);
+        } else if (amapJsApiReady()) {
+          console.log('Using AMap JS API direct (no local proxy)');
+          data = await searchAmapPoisByJsApi(city, city + '酒店');
+        } else {
+          throw new Error('No local proxy available and AMap JS API not loaded');
         }
 
-        const data = await response.json();
-        console.log('AMap API response:', data);
-        if (data.pois && data.pois.length > 0) {
+        if (data && data.pois && data.pois.length > 0) {
           console.log('First POI full data:', JSON.stringify(data.pois[0], null, 2));
         }
 
-        if (data.status === '1' && data.pois && data.pois.length > 0) {
+        if (data && data.status === '1' && data.pois && Array.isArray(data.pois)) {
           console.log('Got', data.pois.length, 'hotels from AMap');
+          if (data.pois.length === 0) {
+            console.log('AMap returned empty pois, falling back to simulated AMap data');
+            return getSimulatedAmapHotels(city).map(h => ({ ...h, __fallback: 'amap_empty' }));
+          }
 
           const hotelsWithComments = [];
           for (let index = 0; index < data.pois.length; index++) {
             const poi = data.pois[index];
             const photos = poi.photos && Array.isArray(poi.photos) && poi.photos.length > 0 ? poi.photos : [];
-            const imageUrl = photos.length > 0 ? photos[0].url : '';
+            let imageUrl = photos.length > 0 ? (photos[0].url || '') : '';
+            if (!imageUrl && photos.length > 0 && typeof photos[0] === 'object') {
+              imageUrl = photos[0].url || photos[0].src || photos[0].image || '';
+            }
 
             const bizExt = poi.biz_ext || {};
             let amapRating = poi.rating || poi.score;
@@ -1633,6 +1718,9 @@
 
             let poiAddress = poi.address;
             if (Array.isArray(poiAddress)) poiAddress = poiAddress.length > 0 ? poiAddress.join('') : '';
+            if (!poiAddress && poi.pname && poi.cityname && poi.adname) {
+              poiAddress = `${poi.pname}${poi.cityname !== poi.pname ? poi.cityname : ''}${poi.adname}` + (poi.location ? ' 经纬度 ' + poi.location : '');
+            }
             if (!poiAddress && poi.location) poiAddress = '经纬度 ' + poi.location;
             if (!poiAddress) poiAddress = '地址信息待补充';
 
@@ -1664,11 +1752,11 @@
           }
           return hotelsWithComments;
         } else {
-          console.log('AMap API returned no results or status error:', data.status, '- falling back to simulated AMap data');
+          console.log('AMap returned no results or status error:', data && data.status, '- falling back to simulated AMap data');
           return getSimulatedAmapHotels(city).map(h => ({ ...h, __fallback: 'amap_empty' }));
         }
       } catch (error) {
-        console.error('AMap API error (likely no local proxy running):', error.message || error);
+        console.error('AMap fetch error:', error.message || error);
         console.log('Falling back to simulated AMap offline data for demo');
         return getSimulatedAmapHotels(city).map(h => ({ ...h, __fallback: 'no_proxy' }));
       }
@@ -1676,18 +1764,26 @@
 
     async function fetchPOIComments(poiId) {
       try {
-        const url = `/api/amap/v3/place/detail?output=json&id=${poiId}`;
-        const response = await fetch(url);
-        const data = await response.json();
+        let data = null;
+        if (useLocalAmapProxy()) {
+          const url = `/api/amap/v3/place/detail?output=json&id=${poiId}`;
+          const response = await fetch(url);
+          if (!response.ok) throw new Error('Proxy detail response not ok: ' + response.status);
+          data = await response.json();
+        } else if (amapJsApiReady()) {
+          data = await getAmapPoiDetailByJsApi(poiId);
+        } else {
+          return [];
+        }
 
-        if (data.status === '1' && data.pois && data.pois.length > 0) {
+        if (data && data.status === '1' && data.pois && data.pois.length > 0) {
           const poi = data.pois[0];
-          if (poi.comment && poi.comment.length > 0) {
+          if (poi.comment && Array.isArray(poi.comment) && poi.comment.length > 0) {
             return poi.comment.slice(0, 5).map(c => ({
-              user: c.user || '匿名用户',
-              content: c.content || '',
-              time: c.time || '',
-              rating: parseFloat(c.score || 5)
+              user: c.user || c.userName || '匿名用户',
+              content: c.content || c.text || '',
+              time: c.time || c.date || '',
+              rating: parseFloat(c.score || c.rating || 5)
             }));
           }
         }
